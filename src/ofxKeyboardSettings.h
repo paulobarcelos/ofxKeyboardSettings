@@ -16,6 +16,27 @@
 #include "ofMain.h"
 #include "ofxXmlSettings.h"
 
+struct ofxKeyboardProperty {
+	string	type;
+	string	label;
+	int		accessKey;
+};
+struct ofxKeyboardFloatProperty : public ofxKeyboardProperty{
+	float*	var;
+	float	min;
+	float	max;
+	float	step;
+};
+struct ofxKeyboardIntProperty : public ofxKeyboardProperty{
+	int*	var;
+	int		min;
+	int		max;
+	int		step;
+};
+struct ofxKeyboardBoolProperty : public ofxKeyboardProperty{
+	bool*	var;
+};
+
 ////////////////////////////////////////////////////////////
 // CLASS DEFINITION ----------------------------------------
 ////////////////////////////////////////////////////////////
@@ -28,7 +49,17 @@ public:
 	void				saveSettings();
 	void				loadSettings();
 	
+	ofxKeyboardFloatProperty*	addProperty(float* var, int accessKey, string label, float min, float max, float step);
+	ofxKeyboardIntProperty*		addProperty(int* var, int accessKey, string label, int min, int max, int step);
+	ofxKeyboardBoolProperty*	addProperty(bool* var, int accessKey, string label);
+	
 private:
+	
+	vector<ofxKeyboardProperty*>	properties;
+	ofxKeyboardProperty*			curProperty;
+	//vector<ofxKeyboardFloatProperty*>	floatProperties;
+	//vector<ofxKeyboardIntProperty*>		intProperties;
+	//vector<ofxKeyboardBoolProperty*>	boolProperties;
 	
 	ofxXmlSettings		settings;
 	
