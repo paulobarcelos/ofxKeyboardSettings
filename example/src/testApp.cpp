@@ -48,6 +48,8 @@ void testApp::draw(){
 		else ofNoFill();
 		ofCircle(50.f + i*100.f, ofGetHeight() / 2, circleRadius);
 	}
+	
+	settings.draw();
 }
 
 //--------------------------------------------------------------

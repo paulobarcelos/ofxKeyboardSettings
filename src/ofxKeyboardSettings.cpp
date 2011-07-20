@@ -84,25 +84,38 @@ void ofxKeyboardSettings::proccessKey(int key)
 ///////////////////////////////////////////////////////////////////////////////////
 void ofxKeyboardSettings::draw(){
 	if (isActive) {
-		/*stringstream reportStream;
-		reportStream	<<	((curSetting == COLOR_CORRECTION)?"*": "")<<"(c) Color Correction: " << ueye->getColorCorrection() << " (min: " << ueye->getColorCorrectionMin() << " | max: " << ueye->getColorCorrectionMax() << " | step: " << ueye->getColorCorrectionStep() << ")" << endl;
-		
+		stringstream reportStream;
+		/*for (vector<ofxKeyboardProperty*>::iterator it = properties.begin(); it!=properties.end(); ++it) {
+			ofxKeyboardProperty* property = *it;
+			if (property->type == FLOAT_TYPE){
+				ofxKeyboardFloatProperty* floatProperty = (ofxKeyboardFloatProperty*)property;
+				drawProperty(floatProperty,reportStream);
+			}
+			else if (property->type == INT_TYPE){
+				ofxKeyboardIntProperty* intProperty = (ofxKeyboardIntProperty*)property;
+				drawProperty(intProperty,reportStream);
+			}
+			else if (property->type == BOOL_TYPE){
+				ofxKeyboardBoolProperty* boolProperty = (ofxKeyboardBoolProperty*)property;
+				drawProperty(boolProperty,reportStream);
+			}
+		}*/
 		ofSetColor(0x000000);
 		ofDrawBitmapString(reportStream.str(), x+1, y+1);
 		ofSetColor(0xffffff);
-		ofDrawBitmapString(reportStream.str(), x, y);*/
+		ofDrawBitmapString(reportStream.str(), x, y);
 	}	
 }
 ///////////////////////////////////////////////////////////////////////////////////
 // drawProperty -------------------------------------------------------------------
 ///////////////////////////////////////////////////////////////////////////////////
 void ofxKeyboardSettings::drawProperty(ofxKeyboardFloatProperty* property, stringstream reportStream){
-	/*reportStream	<< ((curProperty == property)?"*": "")<<"("<<property->accessKey<<") "
+	reportStream	<< ((curProperty == property)?"*": "")<<"("<<property->accessKey<<") "
 					<< property->label << ": " << (*(property->var))
 					<< " (min: " << property->min
 					<< " | max: " << property->max
 					<< " | step: " << property->step
-					<< ")" << endl;*/
+					<< ")" << endl;
 }
 ///////////////////////////////////////////////////////////////////////////////////
 // saveSettings -------------------------------------------------------------------
