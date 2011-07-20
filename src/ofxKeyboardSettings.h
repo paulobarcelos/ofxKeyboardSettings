@@ -63,13 +63,16 @@ public:
 	void				setPropertyValue(ofxKeyboardBoolProperty* property, bool value);
 	
 	ofxKeyboardFloatProperty*	addProperty(float* var, int accessKey, string label, float min, float max, float step, float defaultValue);
-	ofxKeyboardIntProperty*		addProperty(int* var, int accessKey, string label, int min, int max, int step);
-	ofxKeyboardBoolProperty*	addProperty(bool* var, int accessKey, string label);
+	ofxKeyboardIntProperty*		addProperty(int* var, int accessKey, string label, int min, int max, int step, int defaultValue);
+	ofxKeyboardBoolProperty*	addProperty(bool* var, int accessKey, string label, bool defaultValue);
 	
 private:
 	
 	vector<ofxKeyboardProperty*>	properties;
 	ofxKeyboardProperty*			curProperty;
+	ofxKeyboardFloatProperty*		curFloatProperty;
+	ofxKeyboardIntProperty*			curIntProperty;
+	ofxKeyboardBoolProperty*		curBoolProperty;
 	//vector<ofxKeyboardFloatProperty*>	floatProperties;
 	//vector<ofxKeyboardIntProperty*>		intProperties;
 	//vector<ofxKeyboardBoolProperty*>	boolProperties;

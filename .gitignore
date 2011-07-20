@@ -14,10 +14,10 @@
 *.sdf
 *.opensdf
 *.exe
-*/obj/
-*/bin/*.exp
-*/bin/*.lib
-*/bin/*.pdb
-*/bin/*.ilk
-*/bin/*.dll
+example/obj/
+example/bin/*.exp
+example/bin/*.lib
+example/bin/*.pdb
+example/bin/*.ilk
+example/bin/*.dll
 
