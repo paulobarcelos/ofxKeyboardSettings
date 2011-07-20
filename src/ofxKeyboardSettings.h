@@ -54,13 +54,10 @@ public:
 	
 	void				setup(int accessKey, string label);
 	void				proccessKey(int key);
+	void				draw();
 	void				saveSettings();
 	void				loadSettings();
-	void				loadProperty(ofxKeyboardProperty* property);
 	
-	void				setPropertyValue(ofxKeyboardFloatProperty* property, float value);
-	void				setPropertyValue(ofxKeyboardIntProperty* property, int value);
-	void				setPropertyValue(ofxKeyboardBoolProperty* property, bool value);
 	
 	ofxKeyboardFloatProperty*	addProperty(float* var, int accessKey, string label, float min, float max, float step, float defaultValue);
 	ofxKeyboardIntProperty*		addProperty(int* var, int accessKey, string label, int min, int max, int step, int defaultValue);
@@ -73,9 +70,19 @@ private:
 	ofxKeyboardFloatProperty*		curFloatProperty;
 	ofxKeyboardIntProperty*			curIntProperty;
 	ofxKeyboardBoolProperty*		curBoolProperty;
-	//vector<ofxKeyboardFloatProperty*>	floatProperties;
-	//vector<ofxKeyboardIntProperty*>		intProperties;
-	//vector<ofxKeyboardBoolProperty*>	boolProperties;
+	
+	
+	void				loadProperty(ofxKeyboardProperty* property);
+	
+	void				setPropertyValue(ofxKeyboardFloatProperty* property, float value);
+	void				setPropertyValue(ofxKeyboardIntProperty* property, int value);
+	void				setPropertyValue(ofxKeyboardBoolProperty* property, bool value);
+	
+	void				drawProperty(ofxKeyboardFloatProperty* property, stringstream reportStream);
+	void				drawProperty(ofxKeyboardIntProperty* property, stringstream reportStream);
+	void				drawProperty(ofxKeyboardBoolProperty* property, stringstream reportStream);
+	
+	int					x,y;
 	
 	ofxXmlSettings		settings;
 	
