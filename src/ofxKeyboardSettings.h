@@ -13,15 +13,20 @@
 #define KEYBOARD_SETTINGS_HOLD_TIME 4.f
 #define KEYBOARD_SETTINGS_IDLE_TIME 1.f
 
+#define BOOL_TYPE 0
+#define INT_TYPE 1
+#define FLOAT_TYPE 2
+
+
 #include "ofMain.h"
 #include "ofxXmlSettings.h"
 
 struct ofxKeyboardProperty {
-	string	kind;
+	int		type;
 	string	label;
 	int		accessKey;
 };
-struct ofxKeyboardFloatProperty : public ofxKeyboardProperty{
+struct ofxKeyboardFloatProperty : public ofxKeyboardProperty{;
 	float*	var;
 	float	min;
 	float	max;
@@ -52,6 +57,10 @@ public:
 	void				saveSettings();
 	void				loadSettings();
 	void				loadProperty(ofxKeyboardProperty* property);
+	
+	void				setPropertyValue(ofxKeyboardFloatProperty* property, float value);
+	void				setPropertyValue(ofxKeyboardIntProperty* property, int value);
+	void				setPropertyValue(ofxKeyboardBoolProperty* property, bool value);
 	
 	ofxKeyboardFloatProperty*	addProperty(float* var, int accessKey, string label, float min, float max, float step, float defaultValue);
 	ofxKeyboardIntProperty*		addProperty(int* var, int accessKey, string label, int min, int max, int step);

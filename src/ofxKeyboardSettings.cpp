@@ -83,8 +83,23 @@ void ofxKeyboardSettings::loadSettings(){
 // loadProperty -------------------------------------------------------------------
 ///////////////////////////////////////////////////////////////////////////////////
 void ofxKeyboardSettings::loadProperty(ofxKeyboardProperty* property){
-	cout << property << endl;
-	//settings.getValue(label+":"+, CM_DEFAULT_NUM_STORED_FRAMES));
+	ofxKeyboardFloatProperty* floatProperty = (ofxKeyboardFloatProperty*)property;
+	ofxKeyboardIntProperty* intProperty = (ofxKeyboardIntProperty*)property;
+	ofxKeyboardBoolProperty* boolProperty = (ofxKeyboardBoolProperty*)property;
+	switch (property->type) {
+		case FLOAT_TYPE:				
+				setPropertyValue(floatProperty, (float)settings.getValue(label+":"+property->label, floatProperty->defaultValue));
+			break;
+		default:
+			break;
+	}
+}
+///////////////////////////////////////////////////////////////////////////////////
+// setPropertyValue -------------------------------------------------------------------
+///////////////////////////////////////////////////////////////////////////////////
+void ofxKeyboardSettings::setPropertyValue(ofxKeyboardFloatProperty* property, float value){
+	settings.setValue(label+":"+property->label, value, 0);
+	saveSettings();	
 }
 ///////////////////////////////////////////////////////////////////////////////////
 // addProperty --------------------------------------------------------------------
@@ -92,6 +107,7 @@ void ofxKeyboardSettings::loadProperty(ofxKeyboardProperty* property){
 ofxKeyboardFloatProperty* ofxKeyboardSettings::addProperty(float* var, int accessKey, string label, float min, float max, float step, float defaultValue){
 	ofxKeyboardFloatProperty* property;
 	property = new ofxKeyboardFloatProperty();
+	property->type = FLOAT_TYPE;
 	property->var = var;
 	property->accessKey = accessKey;
 	property->label = label;
