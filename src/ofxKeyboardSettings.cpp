@@ -12,13 +12,16 @@
 ///////////////////////////////////////////////////////////////////////////////////
 // setup --------------------------------------------------------------------------
 ///////////////////////////////////////////////////////////////////////////////////
-void ofxKeyboardSettings::setup(int accessKey, string filename)
+void ofxKeyboardSettings::setup(int accessKey, string label)
 {	
 	this->accessKey = accessKey;
-	this->filename = filename;
+	this->label = label;
 	
 	lastProccessedKey = -1;
 	isActive = false;
+	curProperty = NULL;
+	
+	loadSettings();
 }
 ///////////////////////////////////////////////////////////////////////////////////
 // proccessKey --------------------------------------------------------------------
@@ -27,6 +30,7 @@ void ofxKeyboardSettings::proccessKey(int key)
 {	
 	if ((ofGetElapsedTimef() - lastProccessedKeyTime) > KEYBOARD_SETTINGS_IDLE_TIME) {
 		lastProccessedKey = -1;
+		//curProperty = NULL;
 	}
 	
 	if(key == accessKey){
@@ -44,17 +48,52 @@ void ofxKeyboardSettings::proccessKey(int key)
 	
 	lastProccessedKey = key;
 	lastProccessedKeyTime = ofGetElapsedTimef();
+	
+	if(isActive){
+		for (vector<ofxKeyboardProperty*>::iterator it = properties.begin(); it!=properties.end(); ++it) {
+			if (key == (*it)->accessKey){
+				curProperty = *it;
+				break;
+			}
+		}
+		if(curProperty){
+			if (curProperty->type == "int" || curProperty->type == "float")
+			{
+				/*if(key == OF_KEY_UP)
+				else if(key == OF_KEY_DOWN)*/
+			}
+		}
+	}
 }
 ///////////////////////////////////////////////////////////////////////////////////
 // saveSettings -------------------------------------------------------------------
 ///////////////////////////////////////////////////////////////////////////////////
 void ofxKeyboardSettings::saveSettings(){
-	settings.saveFile(filename);
+	settings.saveFile(label+".xml");
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
 // loadSettings ------------------------------------------------------------------
 ///////////////////////////////////////////////////////////////////////////////////
 void ofxKeyboardSettings::loadSettings(){
-	settings.loadFile(filename);
+	if(!settings.loadFile(label+".xml"))
+		saveSettings();
+}
+///////////////////////////////////////////////////////////////////////////////////
+// addProperty --------------------------------------------------------------------
+///////////////////////////////////////////////////////////////////////////////////
+ofxKeyboardFloatProperty* ofxKeyboardSettings::addProperty(float* var, int accessKey, string label, float min, float max, float step, float defaultValue){
+	ofxKeyboardFloatProperty* property;
+	property = new ofxKeyboardFloatProperty();
+	property->var = var;
+	property->accessKey = accessKey;
+	property->label = label;
+	property->min = min;
+	property->max = max;
+	property->step = step;
+	property->defaultValue = defaultValue;
+	
+	properties.push_back(property);
+	
+	return property;
 }
