@@ -2,18 +2,18 @@
 
 //--------------------------------------------------------------
 void testApp::setup(){	
-	// setup the keyboard interface (this will automatically try to load the settings file, and create a blank one, if no is found);
+	// setup the keyboard interface
 	settings.setup('s',			// access key (hold for 4 seconds to toogle the settings accessibility on/off)
 				   "Settings"	// settings label (will define the xml filename)
 				   );
 	
-	// Add a control to a float property
+	// Add a control to a float property (this will automatically try to load it from the settings file, if it's not found, it will be automatically added with the default value);
 	settings.addProperty(&circleRadius,		// pointer to var
 						 'r',				// access key (the key you will need t press to access this property once the settings are active)
 						 "Circle Radius",	// property label (will define the xml tag)
 						 20.f,				// min
 						 50.f,				// max
-						 1.5f				// step
+						 1.5f,				// step
 						 30.f				// default value, in case there is no settings file
 						 );
 	
@@ -38,5 +38,5 @@ void testApp::draw(){
 //--------------------------------------------------------------
 void testApp::keyPressed(int key){
 
-	settings.processKey(key);
+	settings.proccessKey(key);
 }

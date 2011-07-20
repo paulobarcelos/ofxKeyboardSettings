@@ -57,11 +57,11 @@ void ofxKeyboardSettings::proccessKey(int key)
 			}
 		}
 		if(curProperty){
-			if (curProperty->type == "int" || curProperty->type == "float")
+			/*if (curProperty->type == "int" || curProperty->type == "float")
 			{
-				/*if(key == OF_KEY_UP)
-				else if(key == OF_KEY_DOWN)*/
-			}
+				if(key == OF_KEY_UP)
+				else if(key == OF_KEY_DOWN)
+			}*/
 		}
 	}
 }
@@ -73,11 +73,18 @@ void ofxKeyboardSettings::saveSettings(){
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-// loadSettings ------------------------------------------------------------------
+// loadSettings -------------------------------------------------------------------
 ///////////////////////////////////////////////////////////////////////////////////
 void ofxKeyboardSettings::loadSettings(){
 	if(!settings.loadFile(label+".xml"))
 		saveSettings();
+}
+///////////////////////////////////////////////////////////////////////////////////
+// loadProperty -------------------------------------------------------------------
+///////////////////////////////////////////////////////////////////////////////////
+void ofxKeyboardSettings::loadProperty(ofxKeyboardProperty* property){
+	cout << property << endl;
+	//settings.getValue(label+":"+, CM_DEFAULT_NUM_STORED_FRAMES));
 }
 ///////////////////////////////////////////////////////////////////////////////////
 // addProperty --------------------------------------------------------------------
@@ -95,5 +102,7 @@ ofxKeyboardFloatProperty* ofxKeyboardSettings::addProperty(float* var, int acces
 	
 	properties.push_back(property);
 	
+	loadProperty(property);
+		
 	return property;
 }

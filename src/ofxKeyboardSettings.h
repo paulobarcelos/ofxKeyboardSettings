@@ -51,6 +51,7 @@ public:
 	void				proccessKey(int key);
 	void				saveSettings();
 	void				loadSettings();
+	void				loadProperty(ofxKeyboardProperty* property);
 	
 	ofxKeyboardFloatProperty*	addProperty(float* var, int accessKey, string label, float min, float max, float step, float defaultValue);
 	ofxKeyboardIntProperty*		addProperty(int* var, int accessKey, string label, int min, int max, int step);
