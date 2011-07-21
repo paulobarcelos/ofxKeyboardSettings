@@ -85,6 +85,7 @@ void ofxKeyboardSettings::proccessKey(int key)
 void ofxKeyboardSettings::draw(){
 	if (isActive) {
 		stringstream reportStream;
+		reportStream << label << endl;
 		for (vector<ofxKeyboardProperty*>::iterator it = properties.begin(); it!=properties.end(); ++it) {
 			ofxKeyboardProperty* property = *it;
 			if (property->type == FLOAT_TYPE){
