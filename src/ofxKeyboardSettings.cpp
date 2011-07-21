@@ -98,11 +98,18 @@ void ofxKeyboardSettings::draw(){
 			}
 			else if (property->type == INT_TYPE){
 				ofxKeyboardIntProperty* intProperty = (ofxKeyboardIntProperty*)property;
-				//drawProperty(intProperty,reportStream);
+				reportStream	<< ((curProperty == property)?"*": "")<<"("<<property->accessKey<<") "
+				<< property->label << ": " << (*(intProperty->var))
+				<< " (min: " << intProperty->min
+				<< " | max: " << intProperty->max
+				<< " | step: " << intProperty->step
+				<< ")" << endl;
 			}
 			else if (property->type == BOOL_TYPE){
 				ofxKeyboardBoolProperty* boolProperty = (ofxKeyboardBoolProperty*)property;
-				//drawProperty(boolProperty,reportStream);
+				reportStream	<< ((curProperty == property)?"*": "")<<"("<<property->accessKey<<") "
+				<< property->label << ": " << ((*(boolProperty->var))?"true":"false")
+				<< endl;
 			}
 		}
 		ofSetColor(0x000000);
