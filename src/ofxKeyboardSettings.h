@@ -10,8 +10,12 @@
 #ifndef _OFX_KEYBOARD_SETTINGS
 #define _OFX_KEYBOARD_SETTINGS
 
-#define KEYBOARD_SETTINGS_HOLD_TIME 4.f
+#define KEYBOARD_SETTINGS_HOLD_TIME 3.f
 #define KEYBOARD_SETTINGS_IDLE_TIME 1.f
+
+#define KEYBOARD_SETTINGS_WIDTH 550
+#define KEYBOARD_SETTINGS_PROPERTY_HEIGHT 16
+#define KEYBOARD_SETTINGS_VERTICAL_OFFSET 12
 
 #define BOOL_TYPE 0
 #define INT_TYPE 1
@@ -24,7 +28,6 @@
 struct ofxKeyboardProperty {
 	int		type;
 	string	label;
-	int		accessKey;
 };
 struct ofxKeyboardFloatProperty : public ofxKeyboardProperty{;
 	float*	var;
@@ -44,7 +47,6 @@ struct ofxKeyboardBoolProperty : public ofxKeyboardProperty{
 	bool*	var;
 	bool	defaultValue;
 };
-
 ////////////////////////////////////////////////////////////
 // CLASS DEFINITION ----------------------------------------
 ////////////////////////////////////////////////////////////
@@ -54,22 +56,20 @@ public:
 	
 	void				setup(int accessKey, string label);
 	void				proccessKey(int key);
-	void				draw();
+	void				draw(int x = 0, int y = 0);
 	void				saveSettings();
 	void				loadSettings();
 	
 	
-	ofxKeyboardFloatProperty*	addProperty(float* var, int accessKey, string label, float min, float max, float step, float defaultValue);
-	ofxKeyboardIntProperty*		addProperty(int* var, int accessKey, string label, int min, int max, int step, int defaultValue);
-	ofxKeyboardBoolProperty*	addProperty(bool* var, int accessKey, string label, bool defaultValue);
+	ofxKeyboardFloatProperty*	addProperty(float* var, string label, float min, float max, float step, float defaultValue);
+	ofxKeyboardIntProperty*		addProperty(int* var, string label, int min, int max, int step, int defaultValue);
+	ofxKeyboardBoolProperty*	addProperty(bool* var, string label, bool defaultValue);
 	
 private:
 	
 	vector<ofxKeyboardProperty*>	properties;
 	ofxKeyboardProperty*			curProperty;
-	ofxKeyboardFloatProperty*		curFloatProperty;
-	ofxKeyboardIntProperty*			curIntProperty;
-	ofxKeyboardBoolProperty*		curBoolProperty;
+	vector<ofxKeyboardProperty*>::iterator curPropertyIterator;
 	
 	
 	void				loadProperty(ofxKeyboardProperty* property);
@@ -78,11 +78,8 @@ private:
 	void				setPropertyValue(ofxKeyboardIntProperty* property, int value);
 	void				setPropertyValue(ofxKeyboardBoolProperty* property, bool value);
 	
-	void				drawProperty(ofxKeyboardFloatProperty* property, stringstream reportStream);
-	void				drawProperty(ofxKeyboardIntProperty* property, stringstream reportStream);
-	void				drawProperty(ofxKeyboardBoolProperty* property, stringstream reportStream);
-	
-	int					x,y;
+	void				renderFBO();
+	ofFbo				fbo;
 	
 	ofxXmlSettings		settings;
 	
