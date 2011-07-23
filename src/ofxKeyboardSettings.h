@@ -76,14 +76,6 @@ public:
 	ofxKeyboardFloatProperty*	addProperty(float* var, string label, float min, float max, float step, float defaultValue);
 	ofxKeyboardIntProperty*		addProperty(int* var, string label, int min, int max, int step, int defaultValue);
 	ofxKeyboardBoolProperty*	addProperty(bool* var, string label, bool defaultValue);
-		
-private:
-	
-	vector<ofxKeyboardProperty*>	properties;
-	ofxKeyboardProperty*			curProperty;
-	vector<ofxKeyboardProperty*>::iterator curPropertyIterator;
-	
-	void				onAddProperty();
 	
 	void				loadProperty(ofxKeyboardDoubleProperty* property);
 	void				loadProperty(ofxKeyboardFloatProperty* property);
@@ -94,6 +86,16 @@ private:
 	void				setProperty(ofxKeyboardFloatProperty* property, float value);
 	void				setProperty(ofxKeyboardIntProperty* property, int value);
 	void				setProperty(ofxKeyboardBoolProperty* property, bool value);
+		
+private:
+	
+	vector<ofxKeyboardProperty*>	properties;
+	ofxKeyboardProperty*			curProperty;
+	vector<ofxKeyboardProperty*>::iterator curPropertyIterator;
+	
+	void				onAddProperty();
+	
+
 	
 	void				renderFBO();
 	ofFbo				fbo;
