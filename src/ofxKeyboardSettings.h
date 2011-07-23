@@ -17,9 +17,13 @@
 #define KEYBOARD_SETTINGS_PROPERTY_HEIGHT 16
 #define KEYBOARD_SETTINGS_VERTICAL_OFFSET 12
 
-#define BOOL_TYPE 0
-#define INT_TYPE 1
-#define FLOAT_TYPE 2
+#define KEYBOARD_SETTINGS_BOOL_TYPE 0
+#define KEYBOARD_SETTINGS_INT_TYPE 1
+#define KEYBOARD_SETTINGS_FLOAT_TYPE 2
+#define KEYBOARD_SETTINGS_DOUBLE_TYPE 3
+//#define KEYBOARD_SETTINGS_CONTROL_BOOL_TYPE 4
+//#define KEYBOARD_SETTINGS_CONTROL_INT_TYPE 5
+//#define KEYBOARD_SETTINGS_CONTROL_FLOAT_TYPE 8
 
 
 #include "ofMain.h"
@@ -28,6 +32,13 @@
 struct ofxKeyboardProperty {
 	int		type;
 	string	label;
+};
+struct ofxKeyboardDoubleProperty : public ofxKeyboardProperty{;
+	double*	var;
+	double	min;
+	double	max;
+	double	step;
+	double	defaultValue;
 };
 struct ofxKeyboardFloatProperty : public ofxKeyboardProperty{;
 	float*	var;
@@ -61,22 +72,28 @@ public:
 	void				loadSettings();
 	
 	
+	ofxKeyboardDoubleProperty*	addProperty(double* var, string label, double min, double max, double step, double defaultValue);
 	ofxKeyboardFloatProperty*	addProperty(float* var, string label, float min, float max, float step, float defaultValue);
 	ofxKeyboardIntProperty*		addProperty(int* var, string label, int min, int max, int step, int defaultValue);
 	ofxKeyboardBoolProperty*	addProperty(bool* var, string label, bool defaultValue);
-	
+		
 private:
 	
 	vector<ofxKeyboardProperty*>	properties;
 	ofxKeyboardProperty*			curProperty;
 	vector<ofxKeyboardProperty*>::iterator curPropertyIterator;
 	
+	void				onAddProperty();
 	
-	void				loadProperty(ofxKeyboardProperty* property);
+	void				loadProperty(ofxKeyboardDoubleProperty* property);
+	void				loadProperty(ofxKeyboardFloatProperty* property);
+	void				loadProperty(ofxKeyboardIntProperty* property);
+	void				loadProperty(ofxKeyboardBoolProperty* property);
 	
-	void				setPropertyValue(ofxKeyboardFloatProperty* property, float value);
-	void				setPropertyValue(ofxKeyboardIntProperty* property, int value);
-	void				setPropertyValue(ofxKeyboardBoolProperty* property, bool value);
+	void				setProperty(ofxKeyboardDoubleProperty* property, double value);
+	void				setProperty(ofxKeyboardFloatProperty* property, float value);
+	void				setProperty(ofxKeyboardIntProperty* property, int value);
+	void				setProperty(ofxKeyboardBoolProperty* property, bool value);
 	
 	void				renderFBO();
 	ofFbo				fbo;

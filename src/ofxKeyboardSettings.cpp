@@ -59,20 +59,25 @@ void ofxKeyboardSettings::proccessKey(int key)
 		}
 		curProperty = *curPropertyIterator;
 		if(curProperty){
-			if		(curProperty->type == FLOAT_TYPE){
+			if		(curProperty->type == KEYBOARD_SETTINGS_DOUBLE_TYPE){
+				ofxKeyboardDoubleProperty* doubleProperty = (ofxKeyboardDoubleProperty*)curProperty;
+				if		(key == OF_KEY_RIGHT)	setProperty(doubleProperty, (*(doubleProperty->var)) + doubleProperty->step);
+				else if	(key == OF_KEY_LEFT)	setProperty(doubleProperty, (*(doubleProperty->var)) - doubleProperty->step);
+			}
+			else if		(curProperty->type == KEYBOARD_SETTINGS_FLOAT_TYPE){
 				ofxKeyboardFloatProperty* floatProperty = (ofxKeyboardFloatProperty*)curProperty;
-				if		(key == OF_KEY_RIGHT)	setPropertyValue(floatProperty, (*(floatProperty->var)) + floatProperty->step);
-				else if	(key == OF_KEY_LEFT)	setPropertyValue(floatProperty, (*(floatProperty->var)) - floatProperty->step);
+				if		(key == OF_KEY_RIGHT)	setProperty(floatProperty, (*(floatProperty->var)) + floatProperty->step);
+				else if	(key == OF_KEY_LEFT)	setProperty(floatProperty, (*(floatProperty->var)) - floatProperty->step);
 			}
-			else if (curProperty->type == INT_TYPE){
+			else if (curProperty->type == KEYBOARD_SETTINGS_INT_TYPE){
 				ofxKeyboardIntProperty* intProperty = (ofxKeyboardIntProperty*)curProperty;
-				if		(key == OF_KEY_RIGHT)	setPropertyValue(intProperty, (*(intProperty->var)) + intProperty->step);
-				else if	(key == OF_KEY_LEFT)	setPropertyValue(intProperty, (*(intProperty->var)) - intProperty->step);
+				if		(key == OF_KEY_RIGHT)	setProperty(intProperty, (*(intProperty->var)) + intProperty->step);
+				else if	(key == OF_KEY_LEFT)	setProperty(intProperty, (*(intProperty->var)) - intProperty->step);
 			}
-			else if (curProperty->type == BOOL_TYPE){
+			else if (curProperty->type == KEYBOARD_SETTINGS_BOOL_TYPE){
 				ofxKeyboardBoolProperty* boolProperty = (ofxKeyboardBoolProperty*)curProperty;
-				if		(key == OF_KEY_RIGHT)	setPropertyValue(boolProperty, true);
-				else if	(key == OF_KEY_LEFT)	setPropertyValue(boolProperty, false);
+				if		(key == OF_KEY_RIGHT)	setProperty(boolProperty, true);
+				else if	(key == OF_KEY_LEFT)	setProperty(boolProperty, false);
 			}
 		}
 		renderFBO();
@@ -113,7 +118,16 @@ void ofxKeyboardSettings::renderFBO(){
 		propertyStream
 		<< property->label << ": ";
 		
-		if (property->type == FLOAT_TYPE){
+		if (property->type == KEYBOARD_SETTINGS_DOUBLE_TYPE){
+			ofxKeyboardDoubleProperty* floatProperty = (ofxKeyboardDoubleProperty*)property;
+			propertyStream
+			<< (*(floatProperty->var))
+			<< " (min " << floatProperty->min
+			<< ", max " << floatProperty->max
+			<< ", step " << floatProperty->step
+			<< ")";
+		}
+		else if (property->type == KEYBOARD_SETTINGS_FLOAT_TYPE){
 			ofxKeyboardFloatProperty* floatProperty = (ofxKeyboardFloatProperty*)property;
 			propertyStream
 			<< (*(floatProperty->var))
@@ -122,7 +136,7 @@ void ofxKeyboardSettings::renderFBO(){
 			<< ", step " << floatProperty->step
 			<< ")";
 		}
-		else if (property->type == INT_TYPE){
+		else if (property->type == KEYBOARD_SETTINGS_INT_TYPE){
 			ofxKeyboardIntProperty* intProperty = (ofxKeyboardIntProperty*)property;
 			propertyStream
 			<< (*(intProperty->var))
@@ -131,7 +145,7 @@ void ofxKeyboardSettings::renderFBO(){
 			<< ", step " << intProperty->step
 			<< ")";
 		}
-		else if (property->type == BOOL_TYPE){
+		else if (property->type == KEYBOARD_SETTINGS_BOOL_TYPE){
 			ofxKeyboardBoolProperty* boolProperty = (ofxKeyboardBoolProperty*)property;
 			propertyStream
 			<< ((*(boolProperty->var))?"true":"false");
@@ -165,38 +179,44 @@ void ofxKeyboardSettings::loadSettings(){
 ///////////////////////////////////////////////////////////////////////////////////
 // loadProperty -------------------------------------------------------------------
 ///////////////////////////////////////////////////////////////////////////////////
-void ofxKeyboardSettings::loadProperty(ofxKeyboardProperty* property){
-	if (property->type == FLOAT_TYPE){
-		ofxKeyboardFloatProperty* floatProperty = (ofxKeyboardFloatProperty*)property;
-		setPropertyValue(floatProperty, (float)settings.getValue(label+":"+property->label, floatProperty->defaultValue));
-	}
-	else if (property->type == INT_TYPE){
-		ofxKeyboardIntProperty* intProperty = (ofxKeyboardIntProperty*)property;
-		setPropertyValue(intProperty, (int)settings.getValue(label+":"+property->label, intProperty->defaultValue));
-	}
-	else if (property->type == BOOL_TYPE){
-		ofxKeyboardBoolProperty* boolProperty = (ofxKeyboardBoolProperty*)property;
-		setPropertyValue(boolProperty, (bool)settings.getValue(label+":"+property->label, boolProperty->defaultValue));
-	}
+void ofxKeyboardSettings::loadProperty(ofxKeyboardDoubleProperty* property){
+	setProperty(property, (double)settings.getValue(label+":"+property->label, property->defaultValue));
 }
+void ofxKeyboardSettings::loadProperty(ofxKeyboardFloatProperty* property){
+	setProperty(property, (float)settings.getValue(label+":"+property->label, property->defaultValue));
+}
+void ofxKeyboardSettings::loadProperty(ofxKeyboardIntProperty* property){
+	setProperty(property, (int)settings.getValue(label+":"+property->label, property->defaultValue));
+}
+void ofxKeyboardSettings::loadProperty(ofxKeyboardBoolProperty* property){
+	setProperty(property, (bool)settings.getValue(label+":"+property->label, property->defaultValue));
+}
+
 ///////////////////////////////////////////////////////////////////////////////////
-// setPropertyValue ---------------------------------------------------------------
+// setProperty ---------------------------------------------------------------
 ///////////////////////////////////////////////////////////////////////////////////
-void ofxKeyboardSettings::setPropertyValue(ofxKeyboardFloatProperty* property, float value){
+void ofxKeyboardSettings::setProperty(ofxKeyboardDoubleProperty* property, double value){
 	if (value < property->min)		value = property->min;
 	else if (value > property->max) value = property->max;
 	(*(property->var)) = value;
 	settings.setValue(label+":"+property->label, value, 0);
 	saveSettings();
 }
-void ofxKeyboardSettings::setPropertyValue(ofxKeyboardIntProperty* property, int value){
+void ofxKeyboardSettings::setProperty(ofxKeyboardFloatProperty* property, float value){
 	if (value < property->min)		value = property->min;
 	else if (value > property->max) value = property->max;
 	(*(property->var)) = value;
 	settings.setValue(label+":"+property->label, value, 0);
 	saveSettings();
 }
-void ofxKeyboardSettings::setPropertyValue(ofxKeyboardBoolProperty* property, bool value){
+void ofxKeyboardSettings::setProperty(ofxKeyboardIntProperty* property, int value){
+	if (value < property->min)		value = property->min;
+	else if (value > property->max) value = property->max;
+	(*(property->var)) = value;
+	settings.setValue(label+":"+property->label, value, 0);
+	saveSettings();
+}
+void ofxKeyboardSettings::setProperty(ofxKeyboardBoolProperty* property, bool value){
 	(*(property->var)) = value;
 	settings.setValue(label+":"+property->label, value, 0);
 	saveSettings();
@@ -204,10 +224,10 @@ void ofxKeyboardSettings::setPropertyValue(ofxKeyboardBoolProperty* property, bo
 ///////////////////////////////////////////////////////////////////////////////////
 // addProperty --------------------------------------------------------------------
 ///////////////////////////////////////////////////////////////////////////////////
-ofxKeyboardFloatProperty* ofxKeyboardSettings::addProperty(float* var, string label, float min, float max, float step, float defaultValue){
-	ofxKeyboardFloatProperty* property;
-	property = new ofxKeyboardFloatProperty();
-	property->type = FLOAT_TYPE;
+ofxKeyboardDoubleProperty* ofxKeyboardSettings::addProperty(double* var, string label, double min, double max, double step, double defaultValue){
+	ofxKeyboardDoubleProperty* property;
+	property = new ofxKeyboardDoubleProperty();
+	property->type = KEYBOARD_SETTINGS_DOUBLE_TYPE;
 	property->var = var;
 	property->label = label;
 	property->min = min;
@@ -216,18 +236,36 @@ ofxKeyboardFloatProperty* ofxKeyboardSettings::addProperty(float* var, string la
 	property->defaultValue = defaultValue;
 	
 	properties.push_back(property);
-	curPropertyIterator = properties.begin();
 	
 	loadProperty(property);
 	
-	fbo.allocate(KEYBOARD_SETTINGS_WIDTH, (properties.size() + 1) * KEYBOARD_SETTINGS_PROPERTY_HEIGHT);
-		
+	onAddProperty();
+	
+	return property;
+}
+ofxKeyboardFloatProperty* ofxKeyboardSettings::addProperty(float* var, string label, float min, float max, float step, float defaultValue){
+	ofxKeyboardFloatProperty* property;
+	property = new ofxKeyboardFloatProperty();
+	property->type = KEYBOARD_SETTINGS_FLOAT_TYPE;
+	property->var = var;
+	property->label = label;
+	property->min = min;
+	property->max = max;
+	property->step = step;
+	property->defaultValue = defaultValue;
+	
+	properties.push_back(property);
+	
+	loadProperty(property);
+	
+	onAddProperty();
+	
 	return property;
 }
 ofxKeyboardIntProperty* ofxKeyboardSettings::addProperty(int* var, string label, int min, int max, int step, int defaultValue){
 	ofxKeyboardIntProperty* property;
 	property = new ofxKeyboardIntProperty();
-	property->type = INT_TYPE;
+	property->type = KEYBOARD_SETTINGS_INT_TYPE;
 	property->var = var;
 	property->label = label;
 	property->min = min;
@@ -236,28 +274,33 @@ ofxKeyboardIntProperty* ofxKeyboardSettings::addProperty(int* var, string label,
 	property->defaultValue = defaultValue;
 	
 	properties.push_back(property);
-	curPropertyIterator = properties.begin();
 	
 	loadProperty(property);
 	
-	fbo.allocate(KEYBOARD_SETTINGS_WIDTH, (properties.size() + 1) * KEYBOARD_SETTINGS_PROPERTY_HEIGHT);
+	onAddProperty();
 	
 	return property;
 }
 ofxKeyboardBoolProperty* ofxKeyboardSettings::addProperty(bool* var, string label, bool defaultValue){
 	ofxKeyboardBoolProperty* property;
 	property = new ofxKeyboardBoolProperty();
-	property->type = BOOL_TYPE;
+	property->type = KEYBOARD_SETTINGS_BOOL_TYPE;
 	property->var = var;
 	property->label = label;
 	property->defaultValue = defaultValue;
 	
 	properties.push_back(property);
-	curPropertyIterator = properties.begin();
 	
 	loadProperty(property);
 	
-	fbo.allocate(KEYBOARD_SETTINGS_WIDTH, (properties.size() + 1) * KEYBOARD_SETTINGS_PROPERTY_HEIGHT);
+	onAddProperty();
 	
 	return property;
+}
+///////////////////////////////////////////////////////////////////////////////////
+// onAddProperty ------------------------------------------------------------------
+///////////////////////////////////////////////////////////////////////////////////
+void ofxKeyboardSettings::onAddProperty(){
+	curPropertyIterator = properties.begin();
+	fbo.allocate(KEYBOARD_SETTINGS_WIDTH, (properties.size() + 1) * KEYBOARD_SETTINGS_PROPERTY_HEIGHT);	
 }
