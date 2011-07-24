@@ -7,6 +7,14 @@ void testApp::setup(){
 				   "Settings"	// settings label (will define the xml filename) !!Spaces are not allowed!!
 				   );
 	
+	/*settings.addProperty(&greyscale, &Grayscale::getGrey,
+						 "Greyscale_Control"
+						 );*/
+
+	settings.addProperty(&ofGetFrameNum,
+						 "Frame_Num"
+						 );
+	
 	// Add a control to a float property (this will automatically try to load it from the settings file, if it's not found, it will be automatically added with the default value);
 	settings.addProperty(&circleRadius,		// pointer to var
 						 "Circle_Radius",	// property label (will define the xml tag) !!Spaces are not allowed!!

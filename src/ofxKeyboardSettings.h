@@ -143,6 +143,15 @@ struct ofxKeyboardIntProperty : public ofxKeyboardProperty{
 			};
 };
 
+struct ofxKeyboardStaticIntProperty : public ofxKeyboardProperty{
+	int		(*get)();
+	void	draw(int x, int y, bool isCurProperty = false){
+			begingDraw();			
+			output += ofToString((*get)());
+			endDraw(x, y, isCurProperty);
+		};
+};
+
 template <typename GetClass, typename SetClass, typename MinClass, typename MaxClass, typename StepClass>
 struct ofxKeyboardControlIntProperty : public ofxKeyboardProperty{
 	GetClass*	getObject;
@@ -178,15 +187,6 @@ struct ofxKeyboardControlIntProperty : public ofxKeyboardProperty{
 		endDraw(x, y, isCurProperty);
 	};
 };
-/*template <typename T>
-void ofxKeyboardSettings::test (T* object, void(T::*set)(int value)){
-	Tester<T> * tester = new Tester<T>();
-	tester->control = object;
-	tester->set = set;
-	
-	(tester->control->*tester->set)(255);
-	//(tester->control->(*(tester->set)))(255);
-};*/
 // BOOL -------------------------------------------------------------
 struct ofxKeyboardBoolProperty : public ofxKeyboardProperty{
 	bool*	var;
@@ -232,6 +232,14 @@ public:
 	ofxKeyboardFloatProperty*	addProperty(float* var, string label, float min, float max, float step, float defaultValue);
 	ofxKeyboardIntProperty*		addProperty(int* var, string label, int min, int max, int step, int defaultValue);
 	ofxKeyboardBoolProperty*	addProperty(bool* var, string label, bool defaultValue);
+		
+	ofxKeyboardStaticIntProperty*	addProperty(int(* get)(), string label);
+	
+	template <typename GetClass>
+	ofxKeyboardControlIntProperty<GetClass, GetClass, GetClass, GetClass, GetClass>*
+								addProperty(GetClass* getObject, int(GetClass::*get)(),
+											string label
+											);
 	
 	template <typename GetClass, typename SetClass, typename MinClass, typename MaxClass, typename StepClass>
 	ofxKeyboardControlIntProperty<GetClass, SetClass, MinClass, MaxClass, StepClass>*
@@ -267,6 +275,21 @@ private:
 ///////////////////////////////////////////////////////////////////////////////////
 // addProperty --------------------------------------------------------------------
 ///////////////////////////////////////////////////////////////////////////////////
+template <typename GetClass>
+ofxKeyboardControlIntProperty<GetClass, GetClass, GetClass, GetClass, GetClass>*
+ofxKeyboardSettings::addProperty(GetClass* getObject, int(GetClass::*get)(),
+								 string label
+								 ){
+	ofxKeyboardControlIntProperty<GetClass, GetClass, GetClass, GetClass, GetClass>* property;
+	property = new ofxKeyboardControlIntProperty<GetClass, GetClass, GetClass, GetClass, GetClass>();
+	property->allowControl = false;
+	property->getObject = getObject;
+	property->get = get;
+	
+	properties.push_back(property);	
+	
+	onAddProperty();
+}	
 template <typename GetClass, typename SetClass, typename MinClass, typename MaxClass, typename StepClass>
 ofxKeyboardControlIntProperty<GetClass, SetClass, MinClass, MaxClass, StepClass>*
 ofxKeyboardSettings::addProperty(GetClass* getObject, int(GetClass::*get)(),

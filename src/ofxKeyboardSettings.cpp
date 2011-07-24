@@ -190,7 +190,16 @@ ofxKeyboardFloatProperty* ofxKeyboardSettings::addProperty(float* var, string la
 	
 	return property;
 }
-
+ofxKeyboardStaticIntProperty* ofxKeyboardSettings::addProperty(int(* get)(), string label){
+	ofxKeyboardStaticIntProperty* property;
+	property = new ofxKeyboardStaticIntProperty();
+	property->allowControl = false;
+	property->get = get;
+	
+	properties.push_back(property);	
+	
+	onAddProperty();
+}
 ofxKeyboardIntProperty* ofxKeyboardSettings::addProperty(int* var, string label){
 	ofxKeyboardIntProperty* property;
 	property = new ofxKeyboardIntProperty();
