@@ -30,6 +30,8 @@ void testApp::setup(){
 						 "Fill_Shape",
 						 true
 						 );
+	
+	settings.test(&greyscale, &Grayscale::setGrey);
 }
 
 //--------------------------------------------------------------

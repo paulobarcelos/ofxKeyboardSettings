@@ -21,9 +21,10 @@
 #define KEYBOARD_SETTINGS_INT_TYPE 1
 #define KEYBOARD_SETTINGS_FLOAT_TYPE 2
 #define KEYBOARD_SETTINGS_DOUBLE_TYPE 3
-//#define KEYBOARD_SETTINGS_CONTROL_BOOL_TYPE 4
-//#define KEYBOARD_SETTINGS_CONTROL_INT_TYPE 5
-//#define KEYBOARD_SETTINGS_CONTROL_FLOAT_TYPE 8
+#define KEYBOARD_SETTINGS_CONTROL_BOOL_TYPE 4
+#define KEYBOARD_SETTINGS_CONTROL_INT_TYPE 5
+#define KEYBOARD_SETTINGS_CONTROL_FLOAT_TYPE 6
+#define KEYBOARD_SETTINGS_CONTROL_DOUBLE_TYPE 7
 
 
 #include "ofMain.h"
@@ -58,6 +59,22 @@ struct ofxKeyboardBoolProperty : public ofxKeyboardProperty{
 	bool*	var;
 	bool	defaultValue;
 };
+
+struct ofxKeyboardControlIntProperty : public ofxKeyboardProperty{
+	int		(* get)();
+	int		(* set)(int value);
+	int		(* min)();
+	int		(* max)();
+	int		(* step)();
+	int		defaultValue;
+};
+
+template <typename T>
+struct Tester{
+	T* control;
+	void(T::*set)(int value);
+	int (T::*max)();
+};
 ////////////////////////////////////////////////////////////
 // CLASS DEFINITION ----------------------------------------
 ////////////////////////////////////////////////////////////
@@ -77,15 +94,31 @@ public:
 	ofxKeyboardIntProperty*		addProperty(int* var, string label, int min, int max, int step, int defaultValue);
 	ofxKeyboardBoolProperty*	addProperty(bool* var, string label, bool defaultValue);
 	
+	ofxKeyboardControlIntProperty*	addProperty(int (* get)(), int (* set)(int value), string label, int (* min)(), int (* max)(), int (* step)(), int defaultValue);
+	
 	void				loadProperty(ofxKeyboardDoubleProperty* property);
 	void				loadProperty(ofxKeyboardFloatProperty* property);
 	void				loadProperty(ofxKeyboardIntProperty* property);
 	void				loadProperty(ofxKeyboardBoolProperty* property);
 	
+	void				loadProperty(ofxKeyboardControlIntProperty* property);
+	
 	void				setProperty(ofxKeyboardDoubleProperty* property, double value);
 	void				setProperty(ofxKeyboardFloatProperty* property, float value);
 	void				setProperty(ofxKeyboardIntProperty* property, int value);
 	void				setProperty(ofxKeyboardBoolProperty* property, bool value);
+	
+	void				setProperty(ofxKeyboardControlIntProperty* property, int value);
+	
+	template <typename T>
+	void test (T* object, void(T::*set)(int value)){
+		Tester<T> * tester = new Tester<T>();
+		tester->control = object;
+		tester->set = set;
+		
+		(tester->control->*tester->set)(255);
+		//(tester->control->(*(tester->set)))(255);
+	};
 		
 private:
 	
@@ -94,8 +127,6 @@ private:
 	vector<ofxKeyboardProperty*>::iterator curPropertyIterator;
 	
 	void				onAddProperty();
-	
-
 	
 	void				renderFBO();
 	ofFbo				fbo;

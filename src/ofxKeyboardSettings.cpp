@@ -79,8 +79,13 @@ void ofxKeyboardSettings::proccessKey(int key)
 				if		(key == OF_KEY_RIGHT)	setProperty(boolProperty, true);
 				else if	(key == OF_KEY_LEFT)	setProperty(boolProperty, false);
 			}
+			/*else if (curProperty->type == KEYBOARD_SETTINGS_CONTROL_INT_TYPE){
+				ofxKeyboardControlIntProperty* controlIntProperty = (ofxKeyboardControlIntProperty*)curProperty;
+				if		(key == OF_KEY_RIGHT)	setProperty(controlIntProperty, controlIntProperty->(* get)() + controlIntProperty->(* step)());
+				else if	(key == OF_KEY_LEFT)	setProperty(controlIntProperty, controlIntProperty->(* get)() - controlIntProperty->(* step)());
+			}*/
 		}
-		renderFBO();
+		//renderFBO();
 	}
 }
 ///////////////////////////////////////////////////////////////////////////////////
@@ -88,6 +93,7 @@ void ofxKeyboardSettings::proccessKey(int key)
 ///////////////////////////////////////////////////////////////////////////////////
 void ofxKeyboardSettings::draw(int x, int y){
 	if (isActive){
+		renderFBO();
 		ofSetColor(255);
 		fbo.draw(x, y);
 	}
@@ -97,6 +103,7 @@ void ofxKeyboardSettings::draw(int x, int y){
 ///////////////////////////////////////////////////////////////////////////////////
 void ofxKeyboardSettings::renderFBO(){
 	fbo.begin();
+	glEnable(GL_BLEND);
 	
 	int verticalOffset = 16;
 	
@@ -105,7 +112,7 @@ void ofxKeyboardSettings::renderFBO(){
 	<< "(" << (const char)accessKey << ") " << label << endl;
 	
 	ofFill();
-	ofSetColor(255, 255, 255, 200);
+	ofSetColor(255);
 	ofRect(0, 0, KEYBOARD_SETTINGS_WIDTH, KEYBOARD_SETTINGS_PROPERTY_HEIGHT);
 	ofSetColor(0);
 	ofDrawBitmapString(reportStream.str(), 0, KEYBOARD_SETTINGS_VERTICAL_OFFSET);	
@@ -150,16 +157,25 @@ void ofxKeyboardSettings::renderFBO(){
 			propertyStream
 			<< ((*(boolProperty->var))?"true":"false");
 		}
+		/*else if (property->type == KEYBOARD_SETTINGS_CONTROL_INT_TYPE){
+			ofxKeyboardControlIntProperty* controlIntProperty = (ofxKeyboardControlIntProperty*)property;
+			propertyStream
+			<< controlIntProperty->(* get)()
+			<< " (min " << controlIntProperty->(* min)()
+			<< ", max " << controlIntProperty->(* max)()
+			<< ", step " << controlIntProperty->(* step)()
+			<< ")";
+		}*/
 		
 		int grey = (curProperty == property)?0:50;
-		ofSetColor(grey, grey, grey, 200);
+		ofSetColor(grey);
 		ofRect(0, propertyIndex * KEYBOARD_SETTINGS_PROPERTY_HEIGHT, KEYBOARD_SETTINGS_WIDTH, KEYBOARD_SETTINGS_PROPERTY_HEIGHT);
-		ofSetColor(0xffffff);
+		ofSetColor(255);
 		ofDrawBitmapString(propertyStream.str(), 10, KEYBOARD_SETTINGS_VERTICAL_OFFSET + propertyIndex * KEYBOARD_SETTINGS_PROPERTY_HEIGHT);
 		
 		propertyIndex++;
 	}
-	
+	glDisable(GL_BLEND);
 	fbo.end();
 }
 ///////////////////////////////////////////////////////////////////////////////////
@@ -191,7 +207,9 @@ void ofxKeyboardSettings::loadProperty(ofxKeyboardIntProperty* property){
 void ofxKeyboardSettings::loadProperty(ofxKeyboardBoolProperty* property){
 	setProperty(property, (bool)settings.getValue(label+":"+property->label, property->defaultValue));
 }
-
+void ofxKeyboardSettings::loadProperty(ofxKeyboardControlIntProperty* property){
+	setProperty(property, (int)settings.getValue(label+":"+property->label, property->defaultValue));
+}
 ///////////////////////////////////////////////////////////////////////////////////
 // setProperty ---------------------------------------------------------------
 ///////////////////////////////////////////////////////////////////////////////////
@@ -221,6 +239,13 @@ void ofxKeyboardSettings::setProperty(ofxKeyboardBoolProperty* property, bool va
 	settings.setValue(label+":"+property->label, value, 0);
 	saveSettings();
 }
+/*void ofxKeyboardSettings::setProperty(ofxKeyboardControlIntProperty* property, int value){
+	if (value < property->(* min)())		value = property->(* min)();
+	else if (value > property->(* max)())	value = property->(* max)();
+	property->(* set)(value);
+	settings.setValue(label+":"+property->label, value, 0);
+	saveSettings();
+}*/
 ///////////////////////////////////////////////////////////////////////////////////
 // addProperty --------------------------------------------------------------------
 ///////////////////////////////////////////////////////////////////////////////////
@@ -287,6 +312,26 @@ ofxKeyboardBoolProperty* ofxKeyboardSettings::addProperty(bool* var, string labe
 	property->type = KEYBOARD_SETTINGS_BOOL_TYPE;
 	property->var = var;
 	property->label = label;
+	property->defaultValue = defaultValue;
+	
+	properties.push_back(property);
+	
+	loadProperty(property);
+	
+	onAddProperty();
+	
+	return property;
+}
+ofxKeyboardControlIntProperty* ofxKeyboardSettings::addProperty(int (* get)(), int (* set)(int value), string label, int (* min)(), int (* max)(), int (* step)(), int defaultValue){
+	ofxKeyboardControlIntProperty* property;
+	property = new ofxKeyboardControlIntProperty();
+	property->type = KEYBOARD_SETTINGS_CONTROL_INT_TYPE;
+	property->get = get;
+	property->set = set;
+	property->label = label;
+	property->min = min;
+	property->max = max;
+	property->step = step;
 	property->defaultValue = defaultValue;
 	
 	properties.push_back(property);
