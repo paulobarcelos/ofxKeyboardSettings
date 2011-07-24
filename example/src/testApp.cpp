@@ -16,6 +16,10 @@ void testApp::setup(){
 						 30.f				// default value
 						 );
 	
+	settings.addProperty(&circleRadius,				// pointer to var
+						 "Circle_Radius_Monitor"	// property label
+						 );
+	
 	// Add a control to a int property 
 	settings.addProperty(&numCircles,
 						 "Number_of_Circles",
@@ -31,7 +35,14 @@ void testApp::setup(){
 						 true
 						 );
 	
-	settings.test(&greyscale, &Grayscale::setGrey);
+	settings.addProperty(&greyscale, &Grayscale::getGrey,
+						 &greyscale, &Grayscale::setGrey,
+						 "Greyscale_Control",
+						 &greyscale, &Grayscale::getGreyMin,
+						 &greyscale, &Grayscale::getGreyMax,
+						 &greyscale, &Grayscale::getGreyStep,
+						 0
+						 );
 }
 
 //--------------------------------------------------------------
@@ -54,5 +65,5 @@ void testApp::draw(){
 //--------------------------------------------------------------
 void testApp::keyPressed(int key){
 
-	settings.proccessKey(key);
+	settings.keyPressed(key);
 }

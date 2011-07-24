@@ -1,15 +1,21 @@
 /*
  *  ofxKeyboardSettings.h
- *  ColorsOfMovement
+ *  ofxKeyboardSettings
  *
  *  Created by Paulo Barcelos on 7/19/11.
  *  Copyright 2011 paulobarcelos.com. All rights reserved.
  *
  */
 
-#ifndef _OFX_KEYBOARD_SETTINGS
-#define _OFX_KEYBOARD_SETTINGS
+#ifndef _OFX_KEYBAORD_SETTINGS
+#define _OFX_KEYBAORD_SETTINGS
 
+#include "ofMain.h"
+#include "ofxXmlSettings.h"
+
+////////////////////////////////////////////////////////////
+// CONSTANTS -----------------------------------------------
+////////////////////////////////////////////////////////////
 #define KEYBOARD_SETTINGS_HOLD_TIME 3.f
 #define KEYBOARD_SETTINGS_IDLE_TIME 1.f
 
@@ -17,63 +23,192 @@
 #define KEYBOARD_SETTINGS_PROPERTY_HEIGHT 16
 #define KEYBOARD_SETTINGS_VERTICAL_OFFSET 12
 
-#define KEYBOARD_SETTINGS_BOOL_TYPE 0
-#define KEYBOARD_SETTINGS_INT_TYPE 1
-#define KEYBOARD_SETTINGS_FLOAT_TYPE 2
-#define KEYBOARD_SETTINGS_DOUBLE_TYPE 3
-#define KEYBOARD_SETTINGS_CONTROL_BOOL_TYPE 4
-#define KEYBOARD_SETTINGS_CONTROL_INT_TYPE 5
-#define KEYBOARD_SETTINGS_CONTROL_FLOAT_TYPE 6
-#define KEYBOARD_SETTINGS_CONTROL_DOUBLE_TYPE 7
-
-
-#include "ofMain.h"
-#include "ofxXmlSettings.h"
-
+////////////////////////////////////////////////////////////
+// STRUCTS -------------------------------------------------
+////////////////////////////////////////////////////////////
 struct ofxKeyboardProperty {
-	int		type;
+	ofxXmlSettings* settingsXML;
+	string	settingsLabel;
 	string	label;
+	bool	allowControl;
+	
+	virtual void	load (){};
+	virtual void	keyPressed(int key){};
+	virtual void	draw(int x, int y, bool isCurProperty = false){
+						begingDraw();
+						endDraw(x, y, isCurProperty);
+					};
+	void	begingDraw(){
+				output = "";
+				if (!allowControl) output += "(monitor) ";				
+				output += label + ": ";
+			};
+	void	endDraw(int x, int y, bool isCurProperty = false){
+				ofSetColor((isCurProperty)?0:50);
+				ofRect(x, y - KEYBOARD_SETTINGS_VERTICAL_OFFSET, KEYBOARD_SETTINGS_WIDTH, KEYBOARD_SETTINGS_PROPERTY_HEIGHT);
+				ofSetColor(255);
+				ofDrawBitmapString(output, x+10, y);
+			};
+	
+	string output;
 };
-struct ofxKeyboardDoubleProperty : public ofxKeyboardProperty{;
+
+// DOUBLE -------------------------------------------------------------
+struct ofxKeyboardDoubleProperty : public ofxKeyboardProperty{
 	double*	var;
 	double	min;
 	double	max;
 	double	step;
 	double	defaultValue;
+	
+	void	keyPressed(int key){
+				if		(key == OF_KEY_RIGHT)	setValue(*var + step);
+				else if	(key == OF_KEY_LEFT)	setValue(*var - step);
+			};
+	void	load (){
+				setValue((double)settingsXML->getValue(settingsLabel+":"+label, defaultValue));
+			};
+	void	setValue (double value){
+				if		(value < min) value = min;
+				else if (value > max) value = max;
+				*var = value;
+				settingsXML->setValue(settingsLabel+":"+label, value, 0);
+				settingsXML->saveFile(settingsLabel+".xml");
+			};
+	void	draw(int x, int y, bool isCurProperty = false){
+				begingDraw();
+				output += ofToString(*var);
+				if (allowControl) output += " (min " + ofToString(min) + ", max " + ofToString(max) + ", step " + ofToString(step) + ")";	
+				endDraw(x, y, isCurProperty);
+			};
 };
-struct ofxKeyboardFloatProperty : public ofxKeyboardProperty{;
+
+// FLOAT -------------------------------------------------------------
+struct ofxKeyboardFloatProperty : public ofxKeyboardProperty{
 	float*	var;
 	float	min;
 	float	max;
 	float	step;
 	float	defaultValue;
+	
+	void	keyPressed(int key){
+				if		(key == OF_KEY_RIGHT)	setValue(*var + step);
+				else if	(key == OF_KEY_LEFT)	setValue(*var - step);
+			};
+	void	load (){
+				setValue((float)settingsXML->getValue(settingsLabel+":"+label, defaultValue));
+			};
+	void	setValue (float value){
+				if		(value < min) value = min;
+				else if (value > max) value = max;
+				*var = value;
+				settingsXML->setValue(settingsLabel+":"+label, value, 0);
+				settingsXML->saveFile(settingsLabel+".xml");
+			};
+	void	draw(int x, int y, bool isCurProperty = false){
+				begingDraw();		
+				output += ofToString(*var);
+				if (allowControl) output += " (min " + ofToString(min) + ", max " + ofToString(max) + ", step " + ofToString(step) + ")";
+				endDraw(x, y, isCurProperty);
+			};
 };
+
+// INT --------------------------------------------------------------
 struct ofxKeyboardIntProperty : public ofxKeyboardProperty{
 	int*	var;
 	int		min;
 	int		max;
 	int		step;
 	int		defaultValue;
+	
+	void	keyPressed(int key){
+				if		(key == OF_KEY_RIGHT)	setValue(*var + step);
+				else if	(key == OF_KEY_LEFT)	setValue(*var - step);
+			};
+	void	load (){
+				setValue((int)settingsXML->getValue(settingsLabel+":"+label, defaultValue));
+			};
+	void	setValue (int value){
+				if		(value < min) value = min;
+				else if (value > max) value = max;
+				*var = value;
+				settingsXML->setValue(settingsLabel+":"+label, value, 0);
+				settingsXML->saveFile(settingsLabel+".xml");
+			};
+	void	draw(int x, int y, bool isCurProperty = false){
+				begingDraw();			
+				output += ofToString(*var);
+				if (allowControl) output += " (min " + ofToString(min) + ", max " + ofToString(max) + ", step " + ofToString(step) + ")";
+				endDraw(x, y, isCurProperty);
+			};
 };
+
+template <typename GetClass, typename SetClass, typename MinClass, typename MaxClass, typename StepClass>
+struct ofxKeyboardControlIntProperty : public ofxKeyboardProperty{
+	GetClass*	getObject;
+	SetClass*	setObject;
+	MinClass*	minObject;
+	MaxClass*	maxObject;
+	StepClass*	stepObject;
+	void	(SetClass::*set)(int value);
+	int		(GetClass::*get)();
+	int		(MinClass::*min)();
+	int		(MaxClass::*max)();
+	int		(StepClass::*step)();
+	int		defaultValue;
+	
+	void	keyPressed(int key){
+		if		(key == OF_KEY_RIGHT)	setValue((getObject->*get)() + (stepObject->*step)());
+		else if	(key == OF_KEY_LEFT)	setValue((getObject->*get)() - (stepObject->*step)());
+	};
+	void	load (){
+		setValue((int)settingsXML->getValue(settingsLabel+":"+label, defaultValue));
+	};
+	void	setValue (int value){
+		if		(value < (minObject->*min)()) value = (minObject->*min)();
+		else if (value > (maxObject->*max)()) value = (maxObject->*max)();
+		(setObject->*set)(value);
+		settingsXML->setValue(settingsLabel+":"+label, value, 0);
+		settingsXML->saveFile(settingsLabel+".xml");
+	};
+	void	draw(int x, int y, bool isCurProperty = false){
+		begingDraw();			
+		output += ofToString((getObject->*get)());
+		if (allowControl) output += " (min " + ofToString((minObject->*min)()) + ", max " + ofToString((maxObject->*max)()) + ", step " + ofToString((stepObject->*step)()) + ")";
+		endDraw(x, y, isCurProperty);
+	};
+};
+/*template <typename T>
+void ofxKeyboardSettings::test (T* object, void(T::*set)(int value)){
+	Tester<T> * tester = new Tester<T>();
+	tester->control = object;
+	tester->set = set;
+	
+	(tester->control->*tester->set)(255);
+	//(tester->control->(*(tester->set)))(255);
+};*/
+// BOOL -------------------------------------------------------------
 struct ofxKeyboardBoolProperty : public ofxKeyboardProperty{
 	bool*	var;
 	bool	defaultValue;
-};
-
-struct ofxKeyboardControlIntProperty : public ofxKeyboardProperty{
-	int		(* get)();
-	int		(* set)(int value);
-	int		(* min)();
-	int		(* max)();
-	int		(* step)();
-	int		defaultValue;
-};
-
-template <typename T>
-struct Tester{
-	T* control;
-	void(T::*set)(int value);
-	int (T::*max)();
+	
+	void	keyPressed(int key){
+				if		(key == OF_KEY_RIGHT)	setValue(true);
+				else if	(key == OF_KEY_LEFT)	setValue(false);
+			};
+	void	load (){
+				setValue((bool)settingsXML->getValue(settingsLabel+":"+label, defaultValue));
+			};
+	void	setValue (bool value){
+				*var = value;
+				settingsXML->setValue(settingsLabel+":"+label, value, 0);
+				settingsXML->saveFile(settingsLabel+".xml");
+			};
+	void	draw(int x, int y, bool isCurProperty = false){
+				begingDraw();
+				output += (*var)?"true":"false";
+				endDraw(x, y, isCurProperty);
+			};
 };
 ////////////////////////////////////////////////////////////
 // CLASS DEFINITION ----------------------------------------
@@ -83,42 +218,31 @@ class ofxKeyboardSettings {
 public:
 	
 	void				setup(int accessKey, string label);
-	void				proccessKey(int key);
+	void				keyPressed(int key);
 	void				draw(int x = 0, int y = 0);
 	void				saveSettings();
-	void				loadSettings();
+	void				loadSettings();	
 	
+	ofxKeyboardDoubleProperty*	addProperty(double* var, string label);
+	ofxKeyboardFloatProperty*	addProperty(float* var, string label);
+	ofxKeyboardIntProperty*		addProperty(int* var, string label);
+	ofxKeyboardBoolProperty*	addProperty(bool* var, string label);
 	
 	ofxKeyboardDoubleProperty*	addProperty(double* var, string label, double min, double max, double step, double defaultValue);
 	ofxKeyboardFloatProperty*	addProperty(float* var, string label, float min, float max, float step, float defaultValue);
 	ofxKeyboardIntProperty*		addProperty(int* var, string label, int min, int max, int step, int defaultValue);
 	ofxKeyboardBoolProperty*	addProperty(bool* var, string label, bool defaultValue);
 	
-	ofxKeyboardControlIntProperty*	addProperty(int (* get)(), int (* set)(int value), string label, int (* min)(), int (* max)(), int (* step)(), int defaultValue);
-	
-	void				loadProperty(ofxKeyboardDoubleProperty* property);
-	void				loadProperty(ofxKeyboardFloatProperty* property);
-	void				loadProperty(ofxKeyboardIntProperty* property);
-	void				loadProperty(ofxKeyboardBoolProperty* property);
-	
-	void				loadProperty(ofxKeyboardControlIntProperty* property);
-	
-	void				setProperty(ofxKeyboardDoubleProperty* property, double value);
-	void				setProperty(ofxKeyboardFloatProperty* property, float value);
-	void				setProperty(ofxKeyboardIntProperty* property, int value);
-	void				setProperty(ofxKeyboardBoolProperty* property, bool value);
-	
-	void				setProperty(ofxKeyboardControlIntProperty* property, int value);
-	
-	template <typename T>
-	void test (T* object, void(T::*set)(int value)){
-		Tester<T> * tester = new Tester<T>();
-		tester->control = object;
-		tester->set = set;
-		
-		(tester->control->*tester->set)(255);
-		//(tester->control->(*(tester->set)))(255);
-	};
+	template <typename GetClass, typename SetClass, typename MinClass, typename MaxClass, typename StepClass>
+	ofxKeyboardControlIntProperty<GetClass, SetClass, MinClass, MaxClass, StepClass>*
+								addProperty(GetClass* getObject, int(GetClass::*get)(),
+											SetClass* setObject, void(SetClass::*set)(int value),
+											string label, 
+											MinClass* minObject, int(MinClass::*min)(),
+											MaxClass* maxObject, int(MaxClass::*max)(),
+											StepClass* stepObject, int(StepClass::*step)(),
+											int defaultValue
+											);
 		
 private:
 	
@@ -140,4 +264,41 @@ private:
 	
 	bool				isActive;	
 };
+///////////////////////////////////////////////////////////////////////////////////
+// addProperty --------------------------------------------------------------------
+///////////////////////////////////////////////////////////////////////////////////
+template <typename GetClass, typename SetClass, typename MinClass, typename MaxClass, typename StepClass>
+ofxKeyboardControlIntProperty<GetClass, SetClass, MinClass, MaxClass, StepClass>*
+ofxKeyboardSettings::addProperty(GetClass* getObject, int(GetClass::*get)(),
+								 SetClass* setObject, void(SetClass::*set)(int value),
+								 string label, 
+								 MinClass* minObject, int(MinClass::*min)(),
+								 MaxClass* maxObject, int(MaxClass::*max)(),
+								 StepClass* stepObject, int(StepClass::*step)(),
+								 int defaultValue
+								 ){
+	ofxKeyboardControlIntProperty<GetClass, SetClass, MinClass, MaxClass, StepClass>* property;
+	property = new ofxKeyboardControlIntProperty<GetClass, SetClass, MinClass, MaxClass, StepClass>();
+	property->settingsXML = &settings;
+	property->settingsLabel = this->label;
+	property->allowControl = true;
+	property->getObject = getObject;
+	property->setObject = setObject;
+	property->minObject = minObject;
+	property->maxObject = maxObject;
+	property->stepObject = stepObject;
+	property->set = set;
+	property->get = get;
+	property->label = label;
+	property->min = min;
+	property->max = max;
+	property->step = step;
+	property->defaultValue = defaultValue;
+	property->load();
+	
+	properties.push_back(property);	
+	
+	onAddProperty();
+}	
+
 #endif
