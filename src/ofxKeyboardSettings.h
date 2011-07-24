@@ -26,24 +26,22 @@
 ////////////////////////////////////////////////////////////
 // STRUCTS -------------------------------------------------
 ////////////////////////////////////////////////////////////
-struct ofxKeyboardProperty {
+struct ofxKeyboardBaseProperty {
 	ofxXmlSettings* settingsXML;
 	string	settingsLabel;
 	string	label;
 	bool	allowControl;
 	
-	virtual void	load (){};
-	virtual void	keyPressed(int key){};
-	virtual void	draw(int x, int y, bool isCurProperty = false){
-						begingDraw();
-						endDraw(x, y, isCurProperty);
-					};
-	void	begingDraw(){
+	virtual void	load (){};	
+	virtual void	keyPressed(int key){};	
+	virtual void	draw(int x, int y, bool isCurProperty = false){};
+	
+	void	beginDraw(){
 				output = "";
 				if (!allowControl) output += "(monitor) ";				
 				output += label + ": ";
 			};
-	void	endDraw(int x, int y, bool isCurProperty = false){
+	void	endDraw(int x, int y, bool isCurProperty){
 				ofSetColor((isCurProperty)?0:50);
 				ofRect(x, y - KEYBOARD_SETTINGS_VERTICAL_OFFSET, KEYBOARD_SETTINGS_WIDTH, KEYBOARD_SETTINGS_PROPERTY_HEIGHT);
 				ofSetColor(255);
@@ -52,7 +50,48 @@ struct ofxKeyboardProperty {
 	
 	string output;
 };
+template <typename type>
+struct ofxKeyboardProperty : public ofxKeyboardBaseProperty {
+	type*	var;
+	type	min;
+	type	max;
+	type	step;
+	type	defaultValue;
+	
+	void	load (){
+				setValue((type)settingsXML->getValue(settingsLabel+":"+label, defaultValue));
+			};
+	
+	void	setValue (type value){
+				if		(value < min) value = min;
+				else if (value > max) value = max;
+				*var = value;
+				settingsXML->setValue(settingsLabel+":"+label, value, 0);
+				settingsXML->saveFile(settingsLabel+".xml");
+			};
+	
+	void	keyPressed(int key){
+				if		(key == OF_KEY_RIGHT)	setValue(*var + step);
+				else if	(key == OF_KEY_LEFT)	setValue(*var - step);
+			};
+	
+	void	draw(int x, int y, bool isCurProperty = false){
+				ofxKeyboardBaseProperty::beginDraw();
+				output += ofToString(*var);
+				if (allowControl) output += " (min " + ofToString(min) + ", max " + ofToString(max) + ", step " + ofToString(step) + ")";
+				ofxKeyboardBaseProperty::endDraw(x, y, isCurProperty);
+			};
+};
 
+/*struct ofxKeyboardStaticIntProperty : public ofxKeyboardProperty{
+	int		(*get)();
+	void	draw(int x, int y, bool isCurProperty = false){
+		begingDraw();			
+		output += ofToString((*get)());
+		endDraw(x, y, isCurProperty);
+	};
+};*/
+/*
 // DOUBLE -------------------------------------------------------------
 struct ofxKeyboardDoubleProperty : public ofxKeyboardProperty{
 	double*	var;
@@ -209,7 +248,7 @@ struct ofxKeyboardBoolProperty : public ofxKeyboardProperty{
 				output += (*var)?"true":"false";
 				endDraw(x, y, isCurProperty);
 			};
-};
+};*/
 ////////////////////////////////////////////////////////////
 // CLASS DEFINITION ----------------------------------------
 ////////////////////////////////////////////////////////////
@@ -223,17 +262,21 @@ public:
 	void				saveSettings();
 	void				loadSettings();	
 	
-	ofxKeyboardDoubleProperty*	addProperty(double* var, string label);
+	/*ofxKeyboardDoubleProperty*	addProperty(double* var, string label);
 	ofxKeyboardFloatProperty*	addProperty(float* var, string label);
 	ofxKeyboardIntProperty*		addProperty(int* var, string label);
-	ofxKeyboardBoolProperty*	addProperty(bool* var, string label);
+	ofxKeyboardBoolProperty*	addProperty(bool* var, string label);*/
 	
-	ofxKeyboardDoubleProperty*	addProperty(double* var, string label, double min, double max, double step, double defaultValue);
-	ofxKeyboardFloatProperty*	addProperty(float* var, string label, float min, float max, float step, float defaultValue);
+	template <typename type>
+	ofxKeyboardProperty<type>*	addProperty(type* var, string label, type min, type max, type step, type defaultValue);
+	
+	template <typename type>
+	ofxKeyboardProperty<type>*	addProperty(type* var, string label);
+	/*ofxKeyboardFloatProperty*	addProperty(float* var, string label, float min, float max, float step, float defaultValue);
 	ofxKeyboardIntProperty*		addProperty(int* var, string label, int min, int max, int step, int defaultValue);
-	ofxKeyboardBoolProperty*	addProperty(bool* var, string label, bool defaultValue);
+	ofxKeyboardBoolProperty*	addProperty(bool* var, string label, bool defaultValue);*/
 		
-	ofxKeyboardStaticIntProperty*	addProperty(int(* get)(), string label);
+	/*ofxKeyboardStaticIntProperty*	addProperty(int(* get)(), string label);
 	
 	template <typename GetClass>
 	ofxKeyboardControlIntProperty<GetClass, GetClass, GetClass, GetClass, GetClass>*
@@ -250,13 +293,13 @@ public:
 											MaxClass* maxObject, int(MaxClass::*max)(),
 											StepClass* stepObject, int(StepClass::*step)(),
 											int defaultValue
-											);
+											);*/
 		
 private:
 	
-	vector<ofxKeyboardProperty*>	properties;
-	ofxKeyboardProperty*			curProperty;
-	vector<ofxKeyboardProperty*>::iterator curPropertyIterator;
+	vector<ofxKeyboardBaseProperty*>	properties;
+	ofxKeyboardBaseProperty*			curProperty;
+	vector<ofxKeyboardBaseProperty*>::iterator curPropertyIterator;
 	
 	void				onAddProperty();
 	
@@ -275,6 +318,44 @@ private:
 ///////////////////////////////////////////////////////////////////////////////////
 // addProperty --------------------------------------------------------------------
 ///////////////////////////////////////////////////////////////////////////////////
+template <typename type>
+ofxKeyboardProperty<type>* ofxKeyboardSettings::addProperty(type* var, string label){
+	ofxKeyboardProperty<type>* property;
+	property = new ofxKeyboardProperty<type>();
+	property->settingsXML = &settings;
+	property->settingsLabel = this->label;
+	property->allowControl = false;
+	property->var = var;
+	property->label = label;
+		
+	properties.push_back(property);	
+	
+	onAddProperty();
+	
+	return property;
+}
+template <typename type>
+ofxKeyboardProperty<type>* ofxKeyboardSettings::addProperty(type* var, string label, type min, type max, type step, type defaultValue){
+	ofxKeyboardProperty<type>* property;
+	property = new ofxKeyboardProperty<type>();
+	property->settingsXML = &settings;
+	property->settingsLabel = this->label;
+	property->allowControl = true;
+	property->var = var;
+	property->label = label;
+	property->min = min;
+	property->max = max;
+	property->step = step;
+	property->defaultValue = defaultValue;
+	property->load();
+	
+	properties.push_back(property);	
+	
+	onAddProperty();
+	
+	return property;
+}
+/*
 template <typename GetClass>
 ofxKeyboardControlIntProperty<GetClass, GetClass, GetClass, GetClass, GetClass>*
 ofxKeyboardSettings::addProperty(GetClass* getObject, int(GetClass::*get)(),
@@ -323,5 +404,5 @@ ofxKeyboardSettings::addProperty(GetClass* getObject, int(GetClass::*get)(),
 	
 	onAddProperty();
 }	
-
+*/
 #endif

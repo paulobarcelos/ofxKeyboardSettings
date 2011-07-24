@@ -96,8 +96,8 @@ void ofxKeyboardSettings::renderFBO(){
 	ofDrawBitmapString(reportStream.str(), 0, KEYBOARD_SETTINGS_VERTICAL_OFFSET);	
 	
 	int propertyIndex = 1;
-	for (vector<ofxKeyboardProperty*>::iterator it = properties.begin(); it!=properties.end(); ++it) {
-		ofxKeyboardProperty* property = *it;
+	for (vector<ofxKeyboardBaseProperty*>::iterator it = properties.begin(); it!=properties.end(); ++it) {
+		ofxKeyboardBaseProperty* property = *it;
 		
 		property->draw(0, KEYBOARD_SETTINGS_VERTICAL_OFFSET + propertyIndex * KEYBOARD_SETTINGS_PROPERTY_HEIGHT, (curProperty == property));
 				
@@ -123,7 +123,7 @@ void ofxKeyboardSettings::loadSettings(){
 ///////////////////////////////////////////////////////////////////////////////////
 // addProperty --------------------------------------------------------------------
 ///////////////////////////////////////////////////////////////////////////////////
-ofxKeyboardDoubleProperty* ofxKeyboardSettings::addProperty(double* var, string label){
+/*ofxKeyboardDoubleProperty* ofxKeyboardSettings::addProperty(double* var, string label){
 	ofxKeyboardDoubleProperty* property;
 	property = new ofxKeyboardDoubleProperty();
 	property->allowControl = false;
@@ -263,7 +263,7 @@ ofxKeyboardBoolProperty* ofxKeyboardSettings::addProperty(bool* var, string labe
 	onAddProperty();
 	
 	return property;
-}
+}*/
 ///////////////////////////////////////////////////////////////////////////////////
 // onAddProperty ------------------------------------------------------------------
 ///////////////////////////////////////////////////////////////////////////////////

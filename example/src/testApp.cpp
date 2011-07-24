@@ -11,9 +11,9 @@ void testApp::setup(){
 						 "Greyscale_Control"
 						 );*/
 
-	settings.addProperty(&ofGetFrameNum,
+	/*settings.addProperty(&ofGetFrameNum,
 						 "Frame_Num"
-						 );
+						 );*/
 	
 	// Add a control to a float property (this will automatically try to load it from the settings file, if it's not found, it will be automatically added with the default value);
 	settings.addProperty(&circleRadius,		// pointer to var
@@ -29,28 +29,30 @@ void testApp::setup(){
 						 );
 	
 	// Add a control to a int property 
-	settings.addProperty(&numCircles,
+	/*settings.addProperty(&numCircles,
 						 "Number_of_Circles",
 						 1,
 						 5,
 						 1,
 						 1
-						 );
+						 );*/
 	
 	// Add a control to a bool property 
-	settings.addProperty(&drawFill,
+	/*settings.addProperty(&drawFill,
 						 "Fill_Shape",
 						 true
-						 );
+						 );*/
 	
-	settings.addProperty(&greyscale, &Grayscale::getGrey,
+	/*settings.addProperty(&greyscale, &Grayscale::getGrey,
 						 &greyscale, &Grayscale::setGrey,
 						 "Greyscale_Control",
 						 &greyscale, &Grayscale::getGreyMin,
 						 &greyscale, &Grayscale::getGreyMax,
 						 &greyscale, &Grayscale::getGreyStep,
 						 0
-						 );
+						 );*/
+	numCircles = 1;
+	drawFill = true;
 }
 
 //--------------------------------------------------------------
