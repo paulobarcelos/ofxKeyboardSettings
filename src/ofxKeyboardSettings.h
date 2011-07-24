@@ -36,17 +36,17 @@ struct ofxKeyboardBaseProperty {
 	virtual void	keyPressed(int key){};	
 	virtual void	draw(int x, int y, bool isCurProperty = false){};
 	
-	void	beginDraw(){
-				output = "";
-				if (!allowControl) output += "(monitor) ";				
-				output += label + ": ";
-			};
-	void	endDraw(int x, int y, bool isCurProperty){
-				ofSetColor((isCurProperty)?0:50);
-				ofRect(x, y - KEYBOARD_SETTINGS_VERTICAL_OFFSET, KEYBOARD_SETTINGS_WIDTH, KEYBOARD_SETTINGS_PROPERTY_HEIGHT);
-				ofSetColor(255);
-				ofDrawBitmapString(output, x+10, y);
-			};
+	virtual void	beginDraw(){
+						output = "";
+						if (!allowControl) output += "(monitor) ";				
+						output += label + ": ";
+					};
+	virtual void	endDraw(int x, int y, bool isCurProperty){
+						ofSetColor((isCurProperty)?0:50);
+						ofRect(x, y - KEYBOARD_SETTINGS_VERTICAL_OFFSET, KEYBOARD_SETTINGS_WIDTH, KEYBOARD_SETTINGS_PROPERTY_HEIGHT);
+						ofSetColor(255);
+						ofDrawBitmapString(output, x+10, y);
+					};
 	
 	string output;
 };
@@ -83,8 +83,9 @@ struct ofxKeyboardProperty : public ofxKeyboardBaseProperty {
 			};
 };
 
-/*struct ofxKeyboardStaticIntProperty : public ofxKeyboardProperty{
-	int		(*get)();
+/*template <typename type>
+struct ofxKeyboardStaticProperty : public ofxKeyboardBaseProperty{
+	type	(*get)();
 	void	draw(int x, int y, bool isCurProperty = false){
 		begingDraw();			
 		output += ofToString((*get)());
