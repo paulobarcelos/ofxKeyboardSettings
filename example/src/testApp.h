@@ -27,7 +27,6 @@ class testApp : public ofBaseApp{
 		ofxKeyboardSettings settings;
 	
 		float		circleRadius;
-		int			numCircles;
 		bool		drawFill;
 		Grayscale	greyscale;
 		

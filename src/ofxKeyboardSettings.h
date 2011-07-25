@@ -444,6 +444,7 @@ ofxKeyboardStaticProperty<type>* ofxKeyboardSettings::addProperty(type(*get)(), 
 	property = new ofxKeyboardStaticProperty<type>();
 	property->allowControl = false;
 	property->get = get;
+	property->label = label;
 	
 	properties.push_back(property);	
 	
