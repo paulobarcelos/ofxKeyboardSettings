@@ -83,15 +83,53 @@ struct ofxKeyboardProperty : public ofxKeyboardBaseProperty {
 			};
 };
 
-/*template <typename type>
+template <typename type>
 struct ofxKeyboardStaticProperty : public ofxKeyboardBaseProperty{
 	type	(*get)();
 	void	draw(int x, int y, bool isCurProperty = false){
-		begingDraw();			
-		output += ofToString((*get)());
-		endDraw(x, y, isCurProperty);
-	};
-};*/
+				ofxKeyboardBaseProperty::beginDraw();		
+				output += ofToString((*get)());
+				ofxKeyboardBaseProperty::endDraw(x, y, isCurProperty);
+			};
+};
+template <typename type, typename GetClass, typename SetClass, typename MinClass, typename MaxClass, typename StepClass>
+struct ofxKeyboardControlProperty : public ofxKeyboardBaseProperty {
+	GetClass*	getObject;
+	SetClass*	setObject;
+	MinClass*	minObject;
+	MaxClass*	maxObject;
+	StepClass*	stepObject;
+	void	(SetClass::*set)(type value);
+	type	(GetClass::*get)();
+	type	(MinClass::*min)();
+	type	(MaxClass::*max)();
+	type	(StepClass::*step)();
+	type	defaultValue;
+	
+	void	load (){
+				setValue((type)settingsXML->getValue(settingsLabel+":"+label, defaultValue));
+			};
+	
+	void	setValue (type value){
+				if		(value < (minObject->*min)()) value = (minObject->*min)();
+				else if (value > (maxObject->*max)()) value = (maxObject->*max)();
+				(setObject->*set)(value);
+				settingsXML->setValue(settingsLabel+":"+label, value, 0);
+				settingsXML->saveFile(settingsLabel+".xml");
+			};
+	
+	void	keyPressed(int key){
+				if		(key == OF_KEY_RIGHT)	setValue((getObject->*get)() + (stepObject->*step)());
+				else if	(key == OF_KEY_LEFT)	setValue((getObject->*get)() - (stepObject->*step)());
+			};
+	
+	void	draw(int x, int y, bool isCurProperty = false){
+				ofxKeyboardBaseProperty::beginDraw();
+				output += ofToString((getObject->*get)());
+				if (allowControl) output += " (min " + ofToString((minObject->*min)()) + ", max " + ofToString((maxObject->*max)()) + ", step " + ofToString((stepObject->*step)()) + ")";
+				ofxKeyboardBaseProperty::endDraw(x, y, isCurProperty);
+			};
+};
 /*
 // DOUBLE -------------------------------------------------------------
 struct ofxKeyboardDoubleProperty : public ofxKeyboardProperty{
@@ -269,10 +307,31 @@ public:
 	ofxKeyboardBoolProperty*	addProperty(bool* var, string label);*/
 	
 	template <typename type>
-	ofxKeyboardProperty<type>*	addProperty(type* var, string label, type min, type max, type step, type defaultValue);
+	ofxKeyboardProperty<type>*	addProperty(type* var, string label);
 	
 	template <typename type>
-	ofxKeyboardProperty<type>*	addProperty(type* var, string label);
+	ofxKeyboardProperty<type>*	addProperty(type* var, string label, type min, type max, type step, type defaultValue);
+	
+	// bool 
+	template <typename type>
+	ofxKeyboardProperty<type>*	addProperty(type* var, string label, type defaultValue);
+	
+	//static
+	template <typename type>
+	ofxKeyboardStaticProperty<type>*	addProperty(type(*get)(), string label);
+	
+	//control
+	template <typename type, typename GetClass, typename SetClass, typename MinClass, typename MaxClass, typename StepClass>
+	ofxKeyboardControlProperty<type, GetClass, SetClass, MinClass, MaxClass, StepClass>*
+	addProperty(GetClass* getObject, type(GetClass::*get)(),
+				SetClass* setObject, void(SetClass::*set)(type value),
+				string label, 
+				MinClass* minObject, type(MinClass::*min)(),
+				MaxClass* maxObject, type(MaxClass::*max)(),
+				StepClass* stepObject, type(StepClass::*step)(),
+				type defaultValue
+				);
+	
 	/*ofxKeyboardFloatProperty*	addProperty(float* var, string label, float min, float max, float step, float defaultValue);
 	ofxKeyboardIntProperty*		addProperty(int* var, string label, int min, int max, int step, int defaultValue);
 	ofxKeyboardBoolProperty*	addProperty(bool* var, string label, bool defaultValue);*/
@@ -355,6 +414,74 @@ ofxKeyboardProperty<type>* ofxKeyboardSettings::addProperty(type* var, string la
 	onAddProperty();
 	
 	return property;
+}
+// bool
+template <typename type>
+ofxKeyboardProperty<type>* ofxKeyboardSettings::addProperty(type* var, string label, type defaultValue){
+	ofxKeyboardProperty<type>* property;
+	property = new ofxKeyboardProperty<type>();
+	property->settingsXML = &settings;
+	property->settingsLabel = this->label;
+	property->allowControl = true;
+	property->var = var;
+	property->label = label;
+	property->min = false;
+	property->max = true;
+	property->step = true;
+	property->defaultValue = defaultValue;
+	property->load();
+	
+	properties.push_back(property);	
+	
+	onAddProperty();
+	
+	return property;
+}
+// static
+template <typename type>
+ofxKeyboardStaticProperty<type>* ofxKeyboardSettings::addProperty(type(*get)(), string label){
+	ofxKeyboardStaticProperty<type>* property;
+	property = new ofxKeyboardStaticProperty<type>();
+	property->allowControl = false;
+	property->get = get;
+	
+	properties.push_back(property);	
+	
+	onAddProperty();
+}
+// control
+template <typename type, typename GetClass, typename SetClass, typename MinClass, typename MaxClass, typename StepClass>
+ofxKeyboardControlProperty<type, GetClass, SetClass, MinClass, MaxClass, StepClass>*
+ofxKeyboardSettings::addProperty(GetClass* getObject, type(GetClass::*get)(),
+								 SetClass* setObject, void(SetClass::*set)(type value),
+								 string label, 
+								 MinClass* minObject, type(MinClass::*min)(),
+								 MaxClass* maxObject, type(MaxClass::*max)(),
+								 StepClass* stepObject, type(StepClass::*step)(),
+								 type defaultValue
+								 ){
+	ofxKeyboardControlProperty<type, GetClass, SetClass, MinClass, MaxClass, StepClass>* property;
+	property = new ofxKeyboardControlProperty<type, GetClass, SetClass, MinClass, MaxClass, StepClass>();
+	property->settingsXML = &settings;
+	property->settingsLabel = this->label;
+	property->allowControl = true;
+	property->getObject = getObject;
+	property->setObject = setObject;
+	property->minObject = minObject;
+	property->maxObject = maxObject;
+	property->stepObject = stepObject;
+	property->set = set;
+	property->get = get;
+	property->label = label;
+	property->min = min;
+	property->max = max;
+	property->step = step;
+	property->defaultValue = defaultValue;
+	property->load();
+	
+	properties.push_back(property);	
+	
+	onAddProperty();
 }
 /*
 template <typename GetClass>
