@@ -192,24 +192,17 @@ public:
 				type defaultValue
 				);
 		
-private:
-	
+private:	
 	vector<ofxKeyboardBaseProperty*>	properties;
 	ofxKeyboardBaseProperty*			curProperty;
 	vector<ofxKeyboardBaseProperty*>::iterator curPropertyIterator;
-	
-	void				onAddProperty();
-	
-	void				renderFBO();
-	ofFbo				fbo;
-	
+
 	ofxXmlSettings		settings;
 	
 	int					accessKey, lastProccessedKey;
-	string				label;
-	
 	float				accessKeyStartTime, lastProccessedKeyTime;
 	
+	string				label;	
 	bool				isActive;	
 };
 ///////////////////////////////////////////////////////////////////////////////////
@@ -226,7 +219,7 @@ ofxKeyboardStaticProperty<type>* ofxKeyboardSettings::addProperty(type(*get)(), 
 	
 	properties.push_back(property);	
 	
-	onAddProperty();
+	curPropertyIterator = properties.begin();
 }
 
 // VARIABLE PROPERTY (monitor)---------------------------------
@@ -242,7 +235,7 @@ ofxKeyboardProperty<type>* ofxKeyboardSettings::addProperty(type* var, string la
 		
 	properties.push_back(property);	
 	
-	onAddProperty();
+	curPropertyIterator = properties.begin();
 	
 	return property;
 }
@@ -264,7 +257,7 @@ ofxKeyboardProperty<type>* ofxKeyboardSettings::addProperty(type* var, string la
 	
 	properties.push_back(property);	
 	
-	onAddProperty();
+	curPropertyIterator = properties.begin();
 	
 	return property;
 }
@@ -286,7 +279,7 @@ ofxKeyboardProperty<type>* ofxKeyboardSettings::addProperty(type* var, string la
 	
 	properties.push_back(property);	
 	
-	onAddProperty();
+	curPropertyIterator = properties.begin();
 	
 	return property;
 }
@@ -305,7 +298,7 @@ ofxKeyboardSettings::addProperty(GetClass* getObject, type(GetClass::*get)(),
 	
 	properties.push_back(property);	
 	
-	onAddProperty();
+	curPropertyIterator = properties.begin();
 }
 // CONTROL PROPERTY ------------------------------------------
 template <typename type, typename GetClass, typename SetClass, typename MinClass, typename MaxClass, typename StepClass>
@@ -339,7 +332,7 @@ ofxKeyboardSettings::addProperty(GetClass* getObject, type(GetClass::*get)(),
 	
 	properties.push_back(property);	
 	
-	onAddProperty();
+	curPropertyIterator = properties.begin();
 }
 // CONTROL PROPERTY (special case for bool) ------------------
 template <typename type, typename GetClass, typename SetClass>
@@ -372,7 +365,7 @@ ofxKeyboardSettings::addProperty(GetClass* getObject, type(GetClass::*get)(),
 	
 	properties.push_back(property);	
 	
-	onAddProperty();
+	curPropertyIterator = properties.begin();
 	
 	return property;
 }

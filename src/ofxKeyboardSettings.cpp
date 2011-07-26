@@ -70,40 +70,28 @@ void ofxKeyboardSettings::keyPressed(int key)
 ///////////////////////////////////////////////////////////////////////////////////
 void ofxKeyboardSettings::draw(int x, int y){
 	if (isActive){
-		renderFBO();
-		ofSetColor(255);
-		fbo.draw(x, y);
-	}
-}
-///////////////////////////////////////////////////////////////////////////////////
-// renderFBO ----------------------------------------------------------------------
-///////////////////////////////////////////////////////////////////////////////////
-void ofxKeyboardSettings::renderFBO(){
-	fbo.begin();
-	glEnable(GL_BLEND);
-	
-	int verticalOffset = 16;
-	
-	stringstream reportStream;
-	reportStream 
-	<< "(" << (const char)accessKey << ") " << label << endl;
-	
-	ofFill();
-	ofSetColor(255);
-	ofRect(0, 0, KEYBOARD_SETTINGS_WIDTH, KEYBOARD_SETTINGS_PROPERTY_HEIGHT);
-	ofSetColor(0);
-	ofDrawBitmapString(reportStream.str(), 0, KEYBOARD_SETTINGS_VERTICAL_OFFSET);	
-	
-	int propertyIndex = 1;
-	for (vector<ofxKeyboardBaseProperty*>::iterator it = properties.begin(); it!=properties.end(); ++it) {
-		ofxKeyboardBaseProperty* property = *it;
+		glEnable(GL_BLEND);
 		
-		property->draw(0, KEYBOARD_SETTINGS_VERTICAL_OFFSET + propertyIndex * KEYBOARD_SETTINGS_PROPERTY_HEIGHT, (curProperty == property));
-				
-		propertyIndex++;
+		int verticalOffset = 16;
+		
+		string output = "(" + ofToString((const char)accessKey) + ") " + label;
+		
+		ofFill();
+		ofSetColor(255);
+		ofRect(x, y, KEYBOARD_SETTINGS_WIDTH, KEYBOARD_SETTINGS_PROPERTY_HEIGHT);
+		ofSetColor(0);
+		ofDrawBitmapString(output, x, y + KEYBOARD_SETTINGS_VERTICAL_OFFSET);	
+		
+		int propertyIndex = 1;
+		for (vector<ofxKeyboardBaseProperty*>::iterator it = properties.begin(); it!=properties.end(); ++it) {
+			ofxKeyboardBaseProperty* property = *it;
+			
+			property->draw(x, y + KEYBOARD_SETTINGS_VERTICAL_OFFSET + propertyIndex * KEYBOARD_SETTINGS_PROPERTY_HEIGHT, (curProperty == property));
+			
+			propertyIndex++;
+		}
+		glDisable(GL_BLEND);
 	}
-	glDisable(GL_BLEND);
-	fbo.end();
 }
 ///////////////////////////////////////////////////////////////////////////////////
 // saveSettings -------------------------------------------------------------------
@@ -119,11 +107,4 @@ void ofxKeyboardSettings::loadSettings(){
 	settings.loadFile(label+".xml");
 	for (vector<ofxKeyboardBaseProperty*>::iterator it = properties.begin(); it!=properties.end(); ++it)
 		(*it)->load();
-}
-///////////////////////////////////////////////////////////////////////////////////
-// onAddProperty ------------------------------------------------------------------
-///////////////////////////////////////////////////////////////////////////////////
-void ofxKeyboardSettings::onAddProperty(){
-	curPropertyIterator = properties.begin();
-	fbo.allocate(KEYBOARD_SETTINGS_WIDTH, (properties.size() + 1) * KEYBOARD_SETTINGS_PROPERTY_HEIGHT);
 }
