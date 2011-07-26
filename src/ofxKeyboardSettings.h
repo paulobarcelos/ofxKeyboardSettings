@@ -34,15 +34,16 @@ struct ofxKeyboardBaseProperty {
 	
 	virtual void	load (){};	
 	virtual void	keyPressed(int key){};	
-	virtual void	draw(int x, int y, bool isCurProperty = false){};
+	virtual void	draw(float x, float y, bool isCurProperty = false){};
 	
 	virtual void	beginDraw(){
 						output = "";
 						if (!allowControl) output += "(monitor) ";				
 						output += label + ": ";
 					};
-	virtual void	endDraw(int x, int y, bool isCurProperty){
-						ofSetColor((isCurProperty)?0:50);
+	virtual void	endDraw(float x, float y, bool isCurProperty){
+						int grey = (isCurProperty)?0:50;
+						ofSetColor(grey, grey, grey, 150);
 						ofRect(x, y - KEYBOARD_SETTINGS_VERTICAL_OFFSET, KEYBOARD_SETTINGS_WIDTH, KEYBOARD_SETTINGS_PROPERTY_HEIGHT);
 						ofSetColor(255);
 						ofDrawBitmapString(output, x+10, y);
@@ -54,7 +55,7 @@ struct ofxKeyboardBaseProperty {
 template <typename type>
 struct ofxKeyboardStaticProperty : public ofxKeyboardBaseProperty{
 	type	(*get)();
-	void	draw(int x, int y, bool isCurProperty = false){
+	void	draw(float x, float y, bool isCurProperty = false){
 		ofxKeyboardBaseProperty::beginDraw();		
 		output += ofToString((*get)());
 		ofxKeyboardBaseProperty::endDraw(x, y, isCurProperty);
@@ -86,7 +87,7 @@ struct ofxKeyboardProperty : public ofxKeyboardBaseProperty {
 				else if	(key == OF_KEY_LEFT)	setValue(*var - step);
 			};
 	
-	void	draw(int x, int y, bool isCurProperty = false){
+	void	draw(float x, float y, bool isCurProperty = false){
 				ofxKeyboardBaseProperty::beginDraw();
 				output += ofToString(*var);
 				if (allowControl) output += " (min " + ofToString(min) + ", max " + ofToString(max) + ", step " + ofToString(step) + ")";
@@ -125,7 +126,7 @@ struct ofxKeyboardControlProperty : public ofxKeyboardBaseProperty {
 				else if	(key == OF_KEY_LEFT)	setValue((getObject->*get)() - (stepObject->*step)());
 			};
 	
-	void	draw(int x, int y, bool isCurProperty = false){
+	void	draw(float x, float y, bool isCurProperty = false){
 				ofxKeyboardBaseProperty::beginDraw();
 				output += ofToString((getObject->*get)());
 				if (allowControl) output += " (min " + ofToString((minObject->*min)()) + ", max " + ofToString((maxObject->*max)()) + ", step " + ofToString((stepObject->*step)()) + ")";
@@ -147,7 +148,7 @@ public:
 	
 	void				setup(int accessKey, string label);
 	void				keyPressed(int key);
-	void				draw(int x = 0, int y = 0);
+	void				draw(float x = 0, float y = 0);
 	void				saveSettings();
 	void				loadSettings();	
 	

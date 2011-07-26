@@ -68,16 +68,16 @@ void ofxKeyboardSettings::keyPressed(int key)
 ///////////////////////////////////////////////////////////////////////////////////
 // draw ---------------------------------------------------------------------------
 ///////////////////////////////////////////////////////////////////////////////////
-void ofxKeyboardSettings::draw(int x, int y){
+void ofxKeyboardSettings::draw(float x, float y){
 	if (isActive){
-		glEnable(GL_BLEND);
+		//ofEnableBlendMode(OF_BLENDMODE_ALPHA);
 		
 		int verticalOffset = 16;
 		
 		string output = "(" + ofToString((const char)accessKey) + ") " + label;
 		
 		ofFill();
-		ofSetColor(255);
+		ofSetColor(255, 255, 255, 150);
 		ofRect(x, y, KEYBOARD_SETTINGS_WIDTH, KEYBOARD_SETTINGS_PROPERTY_HEIGHT);
 		ofSetColor(0);
 		ofDrawBitmapString(output, x, y + KEYBOARD_SETTINGS_VERTICAL_OFFSET);	
@@ -90,7 +90,8 @@ void ofxKeyboardSettings::draw(int x, int y){
 			
 			propertyIndex++;
 		}
-		glDisable(GL_BLEND);
+		
+		//ofDisableBlendMode();
 	}
 }
 ///////////////////////////////////////////////////////////////////////////////////
