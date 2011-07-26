@@ -63,7 +63,6 @@ void ofxKeyboardSettings::keyPressed(int key)
 				curProperty->keyPressed(key);
 			}
 		}
-		//renderFBO();
 	}
 }
 ///////////////////////////////////////////////////////////////////////////////////
@@ -117,153 +116,10 @@ void ofxKeyboardSettings::saveSettings(){
 // loadSettings -------------------------------------------------------------------
 ///////////////////////////////////////////////////////////////////////////////////
 void ofxKeyboardSettings::loadSettings(){
-	if(!settings.loadFile(label+".xml"))
-		saveSettings();
+	settings.loadFile(label+".xml");
+	for (vector<ofxKeyboardBaseProperty*>::iterator it = properties.begin(); it!=properties.end(); ++it)
+		(*it)->load();
 }
-///////////////////////////////////////////////////////////////////////////////////
-// addProperty --------------------------------------------------------------------
-///////////////////////////////////////////////////////////////////////////////////
-/*ofxKeyboardDoubleProperty* ofxKeyboardSettings::addProperty(double* var, string label){
-	ofxKeyboardDoubleProperty* property;
-	property = new ofxKeyboardDoubleProperty();
-	property->allowControl = false;
-	property->var = var;
-	property->label = label;
-	
-	properties.push_back(property);	
-	
-	onAddProperty();
-	
-	return property;
-}
-ofxKeyboardDoubleProperty* ofxKeyboardSettings::addProperty(double* var, string label, double min, double max, double step, double defaultValue){
-	ofxKeyboardDoubleProperty* property;
-	property = new ofxKeyboardDoubleProperty();
-	property->settingsXML = &settings;
-	property->settingsLabel = this->label;
-	property->allowControl = true;
-	property->var = var;
-	property->label = label;
-	property->min = min;
-	property->max = max;
-	property->step = step;
-	property->defaultValue = defaultValue;
-	property->load();
-	
-	properties.push_back(property);	
-	
-	onAddProperty();
-	
-	return property;
-}
-
-ofxKeyboardFloatProperty* ofxKeyboardSettings::addProperty(float* var, string label){
-	ofxKeyboardFloatProperty* property;
-	property = new ofxKeyboardFloatProperty();
-	property->allowControl = false;
-	property->var = var;
-	property->label = label;
-	
-	properties.push_back(property);	
-	
-	onAddProperty();
-	
-	return property;
-}
-ofxKeyboardFloatProperty* ofxKeyboardSettings::addProperty(float* var, string label, float min, float max, float step, float defaultValue){
-	ofxKeyboardFloatProperty* property;
-	property = new ofxKeyboardFloatProperty();
-	property->settingsXML = &settings;
-	property->settingsLabel = this->label;
-	property->allowControl = true;
-	property->var = var;
-	property->label = label;
-	property->min = min;
-	property->max = max;
-	property->step = step;
-	property->defaultValue = defaultValue;
-	property->load();
-	
-	properties.push_back(property);	
-	
-	onAddProperty();
-	
-	return property;
-}
-ofxKeyboardStaticIntProperty* ofxKeyboardSettings::addProperty(int(* get)(), string label){
-	ofxKeyboardStaticIntProperty* property;
-	property = new ofxKeyboardStaticIntProperty();
-	property->allowControl = false;
-	property->get = get;
-	
-	properties.push_back(property);	
-	
-	onAddProperty();
-}
-ofxKeyboardIntProperty* ofxKeyboardSettings::addProperty(int* var, string label){
-	ofxKeyboardIntProperty* property;
-	property = new ofxKeyboardIntProperty();
-	property->allowControl = false;
-	property->var = var;
-	property->label = label;
-	
-	properties.push_back(property);	
-	
-	onAddProperty();
-	
-	return property;
-}
-ofxKeyboardIntProperty* ofxKeyboardSettings::addProperty(int* var, string label, int min, int max, int step, int defaultValue){
-	ofxKeyboardIntProperty* property;
-	property = new ofxKeyboardIntProperty();
-	property->settingsXML = &settings;
-	property->settingsLabel = this->label;
-	property->allowControl = true;
-	property->var = var;
-	property->label = label;
-	property->min = min;
-	property->max = max;
-	property->step = step;
-	property->defaultValue = defaultValue;
-	property->load();
-	
-	properties.push_back(property);	
-	
-	onAddProperty();
-	
-	return property;
-}
-
-ofxKeyboardBoolProperty* ofxKeyboardSettings::addProperty(bool* var, string label){
-	ofxKeyboardBoolProperty* property;
-	property = new ofxKeyboardBoolProperty();
-	property->allowControl = false;
-	property->var = var;
-	property->label = label;
-	
-	properties.push_back(property);	
-	
-	onAddProperty();
-	
-	return property;
-}
-ofxKeyboardBoolProperty* ofxKeyboardSettings::addProperty(bool* var, string label, bool defaultValue){
-	ofxKeyboardBoolProperty* property;
-	property = new ofxKeyboardBoolProperty();
-	property->settingsXML = &settings;
-	property->settingsLabel = this->label;
-	property->allowControl = true;
-	property->var = var;
-	property->label = label;
-	property->defaultValue = defaultValue;
-	property->load();
-	
-	properties.push_back(property);	
-	
-	onAddProperty();
-	
-	return property;
-}*/
 ///////////////////////////////////////////////////////////////////////////////////
 // onAddProperty ------------------------------------------------------------------
 ///////////////////////////////////////////////////////////////////////////////////

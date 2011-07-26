@@ -15,10 +15,10 @@ void testApp::setup(){
 						 );
 	
 	// Adding a "monitor" to an object function
-	/*settings.addProperty(&greyscale,			// pointer to object
-						 &Grayscale::getGrey,	// pointer to object function
-						 "Greyscale_Control"	// label
-						 );*/
+	settings.addProperty(&movement,				// pointer to object
+						 &Movement::getX,		// pointer to object function
+						 "Circle_X_postion"		// label
+						 );
 	
 	// Adding a "monitor" to any variable (needs to be able to be converted to string using ofToString())
 	settings.addProperty(&circleRadius,				// pointer to var
@@ -38,7 +38,7 @@ void testApp::setup(){
 						 );
 	// (The above syntax will be the same for int, float, short, long or double) 
 	
-	// Add a control to a bool property (this will automatically try to load it from the settings file, if it's not found, it will be automatically added with the default value);
+	// Different syntax to add a bool property (this will automatically try to load it from the settings file, if it's not found, it will be automatically added with the default value);
 	settings.addProperty(&drawFill,		// pointer to var
 						 "Fill_Shape",	// property label (will define the xml tag) !!Spaces are not allowed!!
 						 true			// default value
@@ -56,11 +56,18 @@ void testApp::setup(){
 						 &greyscale, &Grayscale::getGreyStep,	// pointer to step object, pointer to step function
 						 0										// default value
 						 );
+	
+	// And the different syntax to add a bool property controlled by a setter (this will automatically try to load it from the settings file, if it's not found, it will be automatically added with the default value);
+	settings.addProperty(&movement, &Movement::isStopped,	// pointer to get object, pointer to get function
+						 &movement, &Movement::stop,		// pointer to set object, pointer to set function
+						 "Stop_Movement",					// property label (will define the xml tag) !!Spaces are not allowed!!
+						 false								// default value
+						 );
 }
 
 //--------------------------------------------------------------
 void testApp::update(){
-
+	movement.update();
 }
 
 //--------------------------------------------------------------
@@ -68,7 +75,7 @@ void testApp::draw(){
 	ofSetColor(greyscale.getGrey());
 	if(drawFill)ofFill();
 	else ofNoFill();
-	ofCircle(ofGetWidth()/2, ofGetHeight()/2, circleRadius);
+	ofCircle(ofGetWidth()/2+movement.getX(), ofGetHeight()/2, circleRadius);
 	
 	settings.draw(0,0);
 }

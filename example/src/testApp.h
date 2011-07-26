@@ -15,6 +15,19 @@ class Grayscale { //just to show how to handle properties controled by getters/s
 		int		grey;	
 };
 
+class Movement { //just to show how to handle properties controled by getters/setters	
+	public:
+		Movement(){stopped = false;};
+		int		getX(){return x;};
+		void	update(){if(!stopped) x = sin(ofGetElapsedTimef())*100.f;};
+		void	stop(bool value = true){stopped = value;};
+		bool	isStopped(){return stopped;};
+	private:
+		int		x;
+		bool	stopped;
+	
+};
+
 class testApp : public ofBaseApp{
 
 	public:
@@ -29,5 +42,6 @@ class testApp : public ofBaseApp{
 		float		circleRadius;
 		bool		drawFill;
 		Grayscale	greyscale;
+		Movement	movement;
 		
 };
