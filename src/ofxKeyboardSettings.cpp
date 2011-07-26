@@ -70,8 +70,6 @@ void ofxKeyboardSettings::keyPressed(int key)
 ///////////////////////////////////////////////////////////////////////////////////
 void ofxKeyboardSettings::draw(float x, float y){
 	if (isActive){
-		//ofEnableBlendMode(OF_BLENDMODE_ALPHA);
-		
 		int verticalOffset = 16;
 		
 		string output = "(" + ofToString((const char)accessKey) + ") " + label;
@@ -90,8 +88,6 @@ void ofxKeyboardSettings::draw(float x, float y){
 			
 			propertyIndex++;
 		}
-		
-		//ofDisableBlendMode();
 	}
 }
 ///////////////////////////////////////////////////////////////////////////////////
