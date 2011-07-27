@@ -133,11 +133,16 @@ struct ofxKeyboardControlProperty : public ofxKeyboardBaseProperty {
 				ofxKeyboardBaseProperty::endDraw(x, y, isCurProperty);
 			};
 };
+
 template <typename type>
-struct ofxKeyboardControlPropertyBoolHelper {
-	type	min(){return 0;};
-	type	max(){return 1;};
-	type	step(){return 1;};
+struct ofxKeyboardControlPropertyHelper {
+	void	setup(type min, type max, type step){ _min = min; _max = max; _step = step;};
+	type	_min;
+	type	_max;
+	type	_step;
+	type	min(){return _min;};
+	type	max(){return _max;};
+	type	step(){return _step;};
 };
 ////////////////////////////////////////////////////////////
 // CLASS DEFINITION ----------------------------------------
@@ -187,7 +192,7 @@ public:
 				);
 	// Special case for bool 
 	template <typename GetClass, typename SetClass>
-	ofxKeyboardControlProperty<bool, GetClass, SetClass, ofxKeyboardControlPropertyBoolHelper<bool>, ofxKeyboardControlPropertyBoolHelper<bool>, ofxKeyboardControlPropertyBoolHelper<bool> >*
+	ofxKeyboardControlProperty<bool, GetClass, SetClass, ofxKeyboardControlPropertyHelper<bool>, ofxKeyboardControlPropertyHelper<bool>, ofxKeyboardControlPropertyHelper<bool> >*
 	addProperty(GetClass* getObject, bool(GetClass::*get)(),
 				SetClass* setObject, void(SetClass::*set)(bool value),
 				string label, 
@@ -312,18 +317,19 @@ ofxKeyboardSettings::addProperty(GetClass* getObject, type(GetClass::*get)(),
 	
 	curPropertyIterator = properties.begin();
 }
-
+// Special case for bool 
 template <typename GetClass, typename SetClass>
-ofxKeyboardControlProperty<bool, GetClass, SetClass, ofxKeyboardControlPropertyBoolHelper<bool>, ofxKeyboardControlPropertyBoolHelper<bool>, ofxKeyboardControlPropertyBoolHelper<bool> >*
+ofxKeyboardControlProperty<bool, GetClass, SetClass, ofxKeyboardControlPropertyHelper<bool>, ofxKeyboardControlPropertyHelper<bool>, ofxKeyboardControlPropertyHelper<bool> >*
 ofxKeyboardSettings::addProperty(GetClass* getObject, bool(GetClass::*get)(),
 								 SetClass* setObject, void(SetClass::*set)(bool value),
 								 string label, 
 								 bool defaultValue
 								 ){
-	ofxKeyboardControlPropertyBoolHelper<bool>* boolHelper = new ofxKeyboardControlPropertyBoolHelper<bool>();
+	ofxKeyboardControlPropertyHelper<bool>* boolHelper = new ofxKeyboardControlPropertyHelper<bool>();
+	boolHelper->setup(0,1,1);
 	
-	ofxKeyboardControlProperty<bool, GetClass, SetClass, ofxKeyboardControlPropertyBoolHelper<bool>, ofxKeyboardControlPropertyBoolHelper<bool>, ofxKeyboardControlPropertyBoolHelper<bool> >* property;
-	property = new ofxKeyboardControlProperty<bool, GetClass, SetClass, ofxKeyboardControlPropertyBoolHelper<bool>, ofxKeyboardControlPropertyBoolHelper<bool>, ofxKeyboardControlPropertyBoolHelper<bool> >();
+	ofxKeyboardControlProperty<bool, GetClass, SetClass, ofxKeyboardControlPropertyHelper<bool>, ofxKeyboardControlPropertyHelper<bool>, ofxKeyboardControlPropertyHelper<bool> >* property;
+	property = new ofxKeyboardControlProperty<bool, GetClass, SetClass, ofxKeyboardControlPropertyHelper<bool>, ofxKeyboardControlPropertyHelper<bool>, ofxKeyboardControlPropertyHelper<bool> >();
 	property->settingsXML = &settings;
 	property->settingsLabel = this->label;
 	property->allowControl = true;
@@ -335,9 +341,9 @@ ofxKeyboardSettings::addProperty(GetClass* getObject, bool(GetClass::*get)(),
 	property->get = get;
 	property->set = set;
 	property->label = label;	
-	property->min = &ofxKeyboardControlPropertyBoolHelper<bool>::min;
-	property->max = &ofxKeyboardControlPropertyBoolHelper<bool>::max;
-	property->step = &ofxKeyboardControlPropertyBoolHelper<bool>::step;
+	property->min = &ofxKeyboardControlPropertyHelper<bool>::min;
+	property->max = &ofxKeyboardControlPropertyHelper<bool>::max;
+	property->step = &ofxKeyboardControlPropertyHelper<bool>::step;
 	property->defaultValue = defaultValue;
 	property->load();
 	
