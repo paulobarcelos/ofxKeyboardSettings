@@ -3,9 +3,9 @@
 #include "ofMain.h"
 #include "ofxKeyboardSettings.h"
 
-class Grayscale { //just to show how to handle properties controled by getters/setters	
+class Greyscale { //just to show how to handle properties controled by getters/setters	
 	public:
-		Grayscale(){grey = 0;};
+		Greyscale(){grey = 0;};
 		void	setGrey(int grey){this->grey = grey;};
 		int		getGrey(){return grey;};
 		int		getGreyMin(){return 0;};
@@ -41,7 +41,7 @@ class testApp : public ofBaseApp{
 	
 		float		circleRadius;
 		bool		drawFill;
-		Grayscale	greyscale;
+		Greyscale	greyscale;
 		Movement	movement;
 		
 };

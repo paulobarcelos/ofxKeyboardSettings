@@ -57,7 +57,8 @@ void ofxKeyboardSettings::keyPressed(int key)
 			if (curPropertyIterator != --(properties.end()))
 				++curPropertyIterator;
 		}
-		curProperty = *curPropertyIterator;
+		if(properties.size()>0)
+			curProperty = *curPropertyIterator;
 		if(curProperty){
 			if(curProperty->allowControl){
 				curProperty->keyPressed(key);
@@ -104,27 +105,4 @@ void ofxKeyboardSettings::loadSettings(){
 	settings.loadFile(label+".xml");
 	for (vector<ofxKeyboardBaseProperty*>::iterator it = properties.begin(); it!=properties.end(); ++it)
 		(*it)->load();
-}
-///////////////////////////////////////////////////////////////////////////////////
-// addProperty (special cases for bool) -------------------------------------------
-///////////////////////////////////////////////////////////////////////////////////
-ofxKeyboardProperty<bool>* ofxKeyboardSettings::addProperty(bool* var, string label, bool defaultValue){
-	ofxKeyboardProperty<bool>* property;
-	property = new ofxKeyboardProperty<bool>();
-	property->settingsXML = &settings;
-	property->settingsLabel = this->label;
-	property->allowControl = true;
-	property->var = var;
-	property->label = label;
-	property->min = false;
-	property->max = true;
-	property->step = true;
-	property->defaultValue = defaultValue;
-	property->load();
-	
-	properties.push_back(property);	
-	
-	curPropertyIterator = properties.begin();
-	
-	return property;
 }
