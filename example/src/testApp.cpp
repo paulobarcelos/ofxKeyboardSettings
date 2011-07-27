@@ -1,7 +1,7 @@
 #include "testApp.h"
 
 //--------------------------------------------------------------
-void testApp::setup(){	
+void testApp::setup(){
 	// setup the keyboard interface
 	settings.setup('s',			// access key (hold for 3 seconds to toogle the settings accessibility on/off)
 				   "Settings");	// settings label (will define the xml filename) !!Spaces are not allowed!!
@@ -11,7 +11,7 @@ void testApp::setup(){
 	
 	// Adding a "monitor" to a static function (useful for helpers like, ofGetFrameRate(), of ofGetWidth(), etc...)
 	settings.addMonitor(&ofGetFrameRate,	// pointer to function
-						"App_FPS");			// property label						
+						"App_FPS");			// property label	
 	
 	// Adding a "monitor" to an object function
 	settings.addMonitor(&movement,				// pointer to object
@@ -44,12 +44,12 @@ void testApp::setup(){
 	// This is very useful (but the code has a bit more boilerplate),
 	// we can add properties that are controled by getters and setters...
 	// For flexibility the getters/setters can be in different objects (so if your property don't have a min()/max()/step(), you can creta a custom object to handle them)
-	settings.addProperty(&greyscale, &Grayscale::getGrey,		// pointer to get object, pointer to get function
-						 &greyscale, &Grayscale::setGrey,		// pointer to set object, pointer to set function
+	settings.addProperty(&greyscale, &Greyscale::getGrey,		// pointer to get object, pointer to get function
+						 &greyscale, &Greyscale::setGrey,		// pointer to set object, pointer to set function
 						 "Greyscale_Control",					// property label (will define the xml tag) !!Spaces are not allowed!!
-						 &greyscale, &Grayscale::getGreyMin,	// pointer to min object, pointer to min function
-						 &greyscale, &Grayscale::getGreyMax,	// pointer to max object, pointer to max function
-						 &greyscale, &Grayscale::getGreyStep,	// pointer to step object, pointer to step function
+						 &greyscale, &Greyscale::getGreyMin,	// pointer to min object, pointer to min function
+						 &greyscale, &Greyscale::getGreyMax,	// pointer to max object, pointer to max function
+						 &greyscale, &Greyscale::getGreyStep,	// pointer to step object, pointer to step function
 						 0);									// default value
 	
 	// And the different syntax to add a bool property controlled by a setter (this will automatically try to load it from the settings file, if it's not found, it will be automatically added with the default value);
