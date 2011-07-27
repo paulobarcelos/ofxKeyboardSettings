@@ -30,7 +30,7 @@ void testApp::setup(){
 						 "Circle_Radius",	// property label (will define the xml tag) !!Spaces are not allowed!!
 						 20.f,				// min
 						 50.f,				// max
-						 1.5f,				// step
+						 1.37f,				// step
 						 30.f);				// default value
 						 
 	// (The above syntax will be the same for int, float, short, long or double) 
@@ -57,7 +57,7 @@ void testApp::setup(){
 						 &movement, &Movement::stop,		// pointer to set object, pointer to set function
 						 "Stop_Movement",					// property label (will define the xml tag) !!Spaces are not allowed!!
 						 false);							// default value
-						 
+							 
 }
 
 //--------------------------------------------------------------

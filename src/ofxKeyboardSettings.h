@@ -51,7 +51,7 @@ struct ofxKeyboardBaseProperty {
 	
 	string output;
 };
-// STATIC PROPERTY --------------------------------------------
+// ofxKeyboardStaticProperty ----------------------------------
 template <typename type>
 struct ofxKeyboardStaticProperty : public ofxKeyboardBaseProperty{
 	type	(*get)();
@@ -61,7 +61,7 @@ struct ofxKeyboardStaticProperty : public ofxKeyboardBaseProperty{
 		ofxKeyboardBaseProperty::endDraw(x, y, isCurProperty);
 	};
 };
-// VARIABLE PROPERTY ------------------------------------------
+// ofxKeyboardProperty ----------------------------------------
 template <typename type>
 struct ofxKeyboardProperty : public ofxKeyboardBaseProperty {
 	type*	var;
@@ -83,8 +83,8 @@ struct ofxKeyboardProperty : public ofxKeyboardBaseProperty {
 			};
 	
 	void	keyPressed(int key){
-				if		(key == OF_KEY_RIGHT)	setValue(*var + step);
-				else if	(key == OF_KEY_LEFT)	setValue(*var - step);
+				if		(key == OF_KEY_RIGHT && (*var < max))	setValue(*var + step);
+				else if	(key == OF_KEY_LEFT  && (*var > min))	setValue(*var - step);
 			};
 	
 	void	draw(float x, float y, bool isCurProperty = false){
@@ -94,7 +94,7 @@ struct ofxKeyboardProperty : public ofxKeyboardBaseProperty {
 				ofxKeyboardBaseProperty::endDraw(x, y, isCurProperty);
 			};
 };
-// CONTROL PROPERTY ------------------------------------------
+// ofxKeyboardControlProperty -----------------------------------
 template <typename type, typename GetClass, typename SetClass, typename MinClass, typename MaxClass, typename StepClass>
 struct ofxKeyboardControlProperty : public ofxKeyboardBaseProperty {
 	GetClass*	getObject;
@@ -122,8 +122,8 @@ struct ofxKeyboardControlProperty : public ofxKeyboardBaseProperty {
 			};
 	
 	void	keyPressed(int key){
-				if		(key == OF_KEY_RIGHT)	setValue((getObject->*get)() + (stepObject->*step)());
-				else if	(key == OF_KEY_LEFT)	setValue((getObject->*get)() - (stepObject->*step)());
+				if		(key == OF_KEY_RIGHT && ((getObject->*get)() < (maxObject->*max)()) )	setValue((getObject->*get)() + (stepObject->*step)());
+				else if	(key == OF_KEY_LEFT  && ((getObject->*get)() > (maxObject->*min)()) )	setValue((getObject->*get)() - (stepObject->*step)());
 			};
 	
 	void	draw(float x, float y, bool isCurProperty = false){
@@ -169,10 +169,9 @@ public:
 	// addProperty --------------------------------------------------
 	// Variable pointer
 	template <typename type>
-	ofxKeyboardProperty<type>*	addProperty(type* var, string label, type min, type max, type step, type defaultValue);
-	
-	template <typename type>
-	ofxKeyboardProperty<type>*	addProperty(type* var, string label, type defaultValue);
+	ofxKeyboardProperty<type>*	addProperty(type* var, string label, type min, type max, type step, type defaultValue);	
+	// Special case for bool (defined in cpp)
+	ofxKeyboardProperty<bool>*	addProperty(bool* var, string label, bool defaultValue);
 	
 	
 	// Control
@@ -279,29 +278,6 @@ ofxKeyboardProperty<type>* ofxKeyboardSettings::addProperty(type* var, string la
 	
 	return property;
 }
-
-template <typename type>
-ofxKeyboardProperty<type>* ofxKeyboardSettings::addProperty(type* var, string label, type defaultValue){
-	ofxKeyboardProperty<type>* property;
-	property = new ofxKeyboardProperty<type>();
-	property->settingsXML = &settings;
-	property->settingsLabel = this->label;
-	property->allowControl = true;
-	property->var = var;
-	property->label = label;
-	property->min = false;
-	property->max = true;
-	property->step = true;
-	property->defaultValue = defaultValue;
-	property->load();
-	
-	properties.push_back(property);	
-	
-	curPropertyIterator = properties.begin();
-	
-	return property;
-}
-
 
 template <typename type, typename GetClass, typename SetClass, typename MinClass, typename MaxClass, typename StepClass>
 ofxKeyboardControlProperty<type, GetClass, SetClass, MinClass, MaxClass, StepClass>*

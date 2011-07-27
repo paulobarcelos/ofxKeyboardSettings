@@ -105,3 +105,26 @@ void ofxKeyboardSettings::loadSettings(){
 	for (vector<ofxKeyboardBaseProperty*>::iterator it = properties.begin(); it!=properties.end(); ++it)
 		(*it)->load();
 }
+///////////////////////////////////////////////////////////////////////////////////
+// addProperty (special cases for bool) -------------------------------------------
+///////////////////////////////////////////////////////////////////////////////////
+ofxKeyboardProperty<bool>* ofxKeyboardSettings::addProperty(bool* var, string label, bool defaultValue){
+	ofxKeyboardProperty<bool>* property;
+	property = new ofxKeyboardProperty<bool>();
+	property->settingsXML = &settings;
+	property->settingsLabel = this->label;
+	property->allowControl = true;
+	property->var = var;
+	property->label = label;
+	property->min = false;
+	property->max = true;
+	property->step = true;
+	property->defaultValue = defaultValue;
+	property->load();
+	
+	properties.push_back(property);	
+	
+	curPropertyIterator = properties.begin();
+	
+	return property;
+}
