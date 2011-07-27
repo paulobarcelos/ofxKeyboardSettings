@@ -163,7 +163,7 @@ public:
 				string label,
 				bool defaultValue);
 	
-	// As this is not a template, it can only be defined here inside the class, or in hte cpp file,not in the end of this h files, as the other template methods
+	// As this is not a template, it can only be defined here inside the class, or in hte cpp file, but not in the end of this h files, as the other template methods
 	ofxKeyboardControlProperty<bool, ofxKeyboardPropertyHelper<bool>, ofxKeyboardPropertyHelper<bool>, ofxKeyboardPropertyHelper<bool>, ofxKeyboardPropertyHelper<bool>, ofxKeyboardPropertyHelper<bool> >*
 	addProperty(bool* var, string label, bool defaultValue){
 		
