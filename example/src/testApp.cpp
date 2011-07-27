@@ -4,26 +4,23 @@
 void testApp::setup(){	
 	// setup the keyboard interface
 	settings.setup('s',			// access key (hold for 3 seconds to toogle the settings accessibility on/off)
-				   "Settings"	// settings label (will define the xml filename) !!Spaces are not allowed!!
-				   );
+				   "Settings");	// settings label (will define the xml filename) !!Spaces are not allowed!!
+				   
 	
 	// We are going to add some property "monitors" (this means we won't be able to change the value, just monitor them...)
 	
 	// Adding a "monitor" to a static function (useful for helpers like, ofGetFrameRate(), of ofGetWidth(), etc...)
-	settings.addProperty(&ofGetFrameRate,	// pointer to function
-						 "App_FPS"			// property label
-						 );
+	settings.addMonitor(&ofGetFrameRate,	// pointer to function
+						"App_FPS");			// property label						
 	
 	// Adding a "monitor" to an object function
-	settings.addProperty(&movement,				// pointer to object
-						 &Movement::getX,		// pointer to object function
-						 "Circle_X_postion"		// label
-						 );
+	settings.addMonitor(&movement,				// pointer to object
+						&Movement::getX,		// pointer to object function
+						"Circle_X_postion");	// label						
 	
 	// Adding a "monitor" to any variable (needs to be able to be converted to string using ofToString())
-	settings.addProperty(&circleRadius,				// pointer to var
-						 "Circle_Radius_Monitor"	// property label
-						 );
+	settings.addMonitor(&circleRadius,				// pointer to var
+						 "Circle_Radius_Monitor");	// property label						 
 	
 	
 	// Now add the properties that we can actually control the values...
@@ -34,15 +31,14 @@ void testApp::setup(){
 						 20.f,				// min
 						 50.f,				// max
 						 1.5f,				// step
-						 30.f				// default value
-						 );
+						 30.f);				// default value
+						 
 	// (The above syntax will be the same for int, float, short, long or double) 
 	
 	// Different syntax to add a bool property (this will automatically try to load it from the settings file, if it's not found, it will be automatically added with the default value);
 	settings.addProperty(&drawFill,		// pointer to var
 						 "Fill_Shape",	// property label (will define the xml tag) !!Spaces are not allowed!!
-						 true			// default value
-						 );
+						 true);			// default value
 	
 	
 	// This is very useful (but the code has a bit more boilerplate),
@@ -54,15 +50,14 @@ void testApp::setup(){
 						 &greyscale, &Grayscale::getGreyMin,	// pointer to min object, pointer to min function
 						 &greyscale, &Grayscale::getGreyMax,	// pointer to max object, pointer to max function
 						 &greyscale, &Grayscale::getGreyStep,	// pointer to step object, pointer to step function
-						 0										// default value
-						 );
+						 0);									// default value
 	
 	// And the different syntax to add a bool property controlled by a setter (this will automatically try to load it from the settings file, if it's not found, it will be automatically added with the default value);
 	settings.addProperty(&movement, &Movement::isStopped,	// pointer to get object, pointer to get function
 						 &movement, &Movement::stop,		// pointer to set object, pointer to set function
 						 "Stop_Movement",					// property label (will define the xml tag) !!Spaces are not allowed!!
-						 false								// default value
-						 );
+						 false);							// default value
+						 
 }
 
 //--------------------------------------------------------------

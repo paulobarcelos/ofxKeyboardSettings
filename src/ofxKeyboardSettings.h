@@ -153,27 +153,29 @@ public:
 	void				loadSettings();	
 	
 	
-	// STATIC PROPERTY --------------------------------------------
+	// addMonitor --------------------------------------------------
 	template <typename type>
-	ofxKeyboardStaticProperty<type>*	addProperty(type(*get)(), string label);
+	ofxKeyboardProperty<type>*			addMonitor(type* var, string label);
 	
-	// VARIABLE PROPERTY (monitor)---------------------------------
 	template <typename type>
-	ofxKeyboardProperty<type>*	addProperty(type* var, string label);
-	// VARIABLE PROPERTY ------------------------------------------
+	ofxKeyboardStaticProperty<type>*	addMonitor(type(*get)(), string label);	
+	
+	template <typename type, typename GetClass>
+	ofxKeyboardControlProperty<type, GetClass, GetClass, GetClass, GetClass, GetClass>*
+	addMonitor(GetClass* getObject, type(GetClass::*get)(),
+				string label
+				);
+	
+	// addProperty --------------------------------------------------
+	// Variable pointer
 	template <typename type>
 	ofxKeyboardProperty<type>*	addProperty(type* var, string label, type min, type max, type step, type defaultValue);
-	// VARIABLE PROPERTY (special case for bool) ------------------ 
+	
 	template <typename type>
 	ofxKeyboardProperty<type>*	addProperty(type* var, string label, type defaultValue);
 	
-	// CONTROL PROPERTY (monitor)---------------------------------
-	template <typename type, typename GetClass>
-	ofxKeyboardControlProperty<type, GetClass, GetClass, GetClass, GetClass, GetClass>*
-	addProperty(GetClass* getObject, type(GetClass::*get)(),
-				string label
-				);	
-	// CONTROL PROPERTY ------------------------------------------
+	
+	// Control
 	template <typename type, typename GetClass, typename SetClass, typename MinClass, typename MaxClass, typename StepClass>
 	ofxKeyboardControlProperty<type, GetClass, SetClass, MinClass, MaxClass, StepClass>*
 	addProperty(GetClass* getObject, type(GetClass::*get)(),
@@ -184,7 +186,7 @@ public:
 				StepClass* stepObject, type(StepClass::*step)(),
 				type defaultValue
 				);
-	// CONTROL PROPERTY (special case for bool) ------------------
+	
 	template <typename type, typename GetClass, typename SetClass>
 	ofxKeyboardControlProperty<type, GetClass, SetClass, ofxKeyboardControlPropertyBoolHelper<type>, ofxKeyboardControlPropertyBoolHelper<type>, ofxKeyboardControlPropertyBoolHelper<type> >*
 	addProperty(GetClass* getObject, type(GetClass::*get)(),
@@ -207,11 +209,25 @@ private:
 	bool				isActive;	
 };
 ///////////////////////////////////////////////////////////////////////////////////
-// addProperty --------------------------------------------------------------------
+// addMonitor ---------------------------------------------------------------------
 ///////////////////////////////////////////////////////////////////////////////////
-// STATIC PROPERTY --------------------------------------------
 template <typename type>
-ofxKeyboardStaticProperty<type>* ofxKeyboardSettings::addProperty(type(*get)(), string label){
+ofxKeyboardProperty<type>* ofxKeyboardSettings::addMonitor(type* var, string label){
+	ofxKeyboardProperty<type>* property;
+	property = new ofxKeyboardProperty<type>();
+	property->allowControl = false;
+	property->var = var;
+	property->label = label;
+	
+	properties.push_back(property);	
+	
+	curPropertyIterator = properties.begin();
+	
+	return property;
+}
+
+template <typename type>
+ofxKeyboardStaticProperty<type>* ofxKeyboardSettings::addMonitor(type(*get)(), string label){
 	ofxKeyboardStaticProperty<type>* property;
 	property = new ofxKeyboardStaticProperty<type>();
 	property->allowControl = false;
@@ -223,24 +239,25 @@ ofxKeyboardStaticProperty<type>* ofxKeyboardSettings::addProperty(type(*get)(), 
 	curPropertyIterator = properties.begin();
 }
 
-// VARIABLE PROPERTY (monitor)---------------------------------
-template <typename type>
-ofxKeyboardProperty<type>* ofxKeyboardSettings::addProperty(type* var, string label){
-	ofxKeyboardProperty<type>* property;
-	property = new ofxKeyboardProperty<type>();
-	property->settingsXML = &settings;
-	property->settingsLabel = this->label;
+template <typename type, typename GetClass>
+ofxKeyboardControlProperty<type, GetClass, GetClass, GetClass, GetClass, GetClass>*
+ofxKeyboardSettings::addMonitor(GetClass* getObject, type(GetClass::*get)(),
+								string label
+								){
+	ofxKeyboardControlProperty<type, GetClass, GetClass, GetClass, GetClass, GetClass>* property;
+	property = new ofxKeyboardControlProperty<type, GetClass, GetClass, GetClass, GetClass, GetClass>();
 	property->allowControl = false;
-	property->var = var;
+	property->getObject = getObject;
+	property->get = get;
 	property->label = label;
-		
+	
 	properties.push_back(property);	
 	
 	curPropertyIterator = properties.begin();
-	
-	return property;
 }
-// VARIABLE PROPERTY ------------------------------------------
+///////////////////////////////////////////////////////////////////////////////////
+// addProperty --------------------------------------------------------------------
+///////////////////////////////////////////////////////////////////////////////////
 template <typename type>
 ofxKeyboardProperty<type>* ofxKeyboardSettings::addProperty(type* var, string label, type min, type max, type step, type defaultValue){
 	ofxKeyboardProperty<type>* property;
@@ -262,7 +279,7 @@ ofxKeyboardProperty<type>* ofxKeyboardSettings::addProperty(type* var, string la
 	
 	return property;
 }
-// VARIABLE PROPERTY (special case for bool) ------------------
+
 template <typename type>
 ofxKeyboardProperty<type>* ofxKeyboardSettings::addProperty(type* var, string label, type defaultValue){
 	ofxKeyboardProperty<type>* property;
@@ -284,24 +301,8 @@ ofxKeyboardProperty<type>* ofxKeyboardSettings::addProperty(type* var, string la
 	
 	return property;
 }
-// CONTROL PROPERTY (monitor) ---------------------------------
-template <typename type, typename GetClass>
-ofxKeyboardControlProperty<type, GetClass, GetClass, GetClass, GetClass, GetClass>*
-ofxKeyboardSettings::addProperty(GetClass* getObject, type(GetClass::*get)(),
-								 string label
-								 ){
-	ofxKeyboardControlProperty<type, GetClass, GetClass, GetClass, GetClass, GetClass>* property;
-	property = new ofxKeyboardControlProperty<type, GetClass, GetClass, GetClass, GetClass, GetClass>();
-	property->allowControl = false;
-	property->getObject = getObject;
-	property->get = get;
-	property->label = label;
-	
-	properties.push_back(property);	
-	
-	curPropertyIterator = properties.begin();
-}
-// CONTROL PROPERTY ------------------------------------------
+
+
 template <typename type, typename GetClass, typename SetClass, typename MinClass, typename MaxClass, typename StepClass>
 ofxKeyboardControlProperty<type, GetClass, SetClass, MinClass, MaxClass, StepClass>*
 ofxKeyboardSettings::addProperty(GetClass* getObject, type(GetClass::*get)(),
@@ -335,7 +336,7 @@ ofxKeyboardSettings::addProperty(GetClass* getObject, type(GetClass::*get)(),
 	
 	curPropertyIterator = properties.begin();
 }
-// CONTROL PROPERTY (special case for bool) ------------------
+
 template <typename type, typename GetClass, typename SetClass>
 ofxKeyboardControlProperty<type, GetClass, SetClass, ofxKeyboardControlPropertyBoolHelper<type>, ofxKeyboardControlPropertyBoolHelper<type>, ofxKeyboardControlPropertyBoolHelper<type> >*
 ofxKeyboardSettings::addProperty(GetClass* getObject, type(GetClass::*get)(),
