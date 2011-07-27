@@ -136,10 +136,12 @@ struct ofxKeyboardControlProperty : public ofxKeyboardBaseProperty {
 
 template <typename type>
 struct ofxKeyboardControlPropertyHelper {
-	void	setup(type min, type max, type step){ _min = min; _max = max; _step = step;};
+	type*	_var;
 	type	_min;
 	type	_max;
 	type	_step;
+	void	set(type value){*_var = value;};
+	type	get(){return *_var;};
 	type	min(){return _min;};
 	type	max(){return _max;};
 	type	step(){return _step;};
@@ -326,7 +328,9 @@ ofxKeyboardSettings::addProperty(GetClass* getObject, bool(GetClass::*get)(),
 								 bool defaultValue
 								 ){
 	ofxKeyboardControlPropertyHelper<bool>* boolHelper = new ofxKeyboardControlPropertyHelper<bool>();
-	boolHelper->setup(0,1,1);
+	boolHelper->_min = false;
+	boolHelper->_max = true;
+	boolHelper->_step = 1;
 	
 	ofxKeyboardControlProperty<bool, GetClass, SetClass, ofxKeyboardControlPropertyHelper<bool>, ofxKeyboardControlPropertyHelper<bool>, ofxKeyboardControlPropertyHelper<bool> >* property;
 	property = new ofxKeyboardControlProperty<bool, GetClass, SetClass, ofxKeyboardControlPropertyHelper<bool>, ofxKeyboardControlPropertyHelper<bool>, ofxKeyboardControlPropertyHelper<bool> >();
