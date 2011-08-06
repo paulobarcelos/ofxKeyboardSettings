@@ -57,6 +57,7 @@ void testApp::setup(){
 						 &movement, &Movement::stop,		// pointer to set object, pointer to set function
 						 "Stop_Movement",					// property label (will define the xml tag) !!Spaces are not allowed!!
 						 false);							// default value
+	 
 							 
 }
 
