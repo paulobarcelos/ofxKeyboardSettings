@@ -53,14 +53,14 @@ struct ofxKeyboardBaseProperty {
 };
 
 // ofxKeyboardControlProperty -----------------------------------
-template <typename type, typename GetClass, typename SetClass, typename MinClass, typename MaxClass, typename StepClass>
+template <typename type, typename GetClass, typename SetClass, typename SetReturnClass,typename MinClass, typename MaxClass, typename StepClass>
 struct ofxKeyboardControlProperty : public ofxKeyboardBaseProperty {
 	GetClass*	getObject;
 	SetClass*	setObject;
 	MinClass*	minObject;
 	MaxClass*	maxObject;
 	StepClass*	stepObject;
-	void	(SetClass::*set)(type value);
+	SetReturnClass	(SetClass::*set)(type value);
 	type	(GetClass::*get)();
 	type	(MinClass::*min)();
 	type	(MaxClass::*max)();
@@ -124,27 +124,27 @@ public:
 	
 	// addMonitor -------------------------------------------------- 
 	template <typename type>
-	ofxKeyboardControlProperty<type, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type> >*
+	ofxKeyboardControlProperty<type, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type>, void, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type> >*
 	addMonitor(type(*get)(), string label);
 	
 	template <typename type>
-	ofxKeyboardControlProperty<type, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type> >*
+	ofxKeyboardControlProperty<type, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type>, void, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type> >*
 	addMonitor(type* var, string label);
 	
 	template <typename type, typename GetClass>
-	ofxKeyboardControlProperty<type, GetClass, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type> >*
+	ofxKeyboardControlProperty<type, GetClass, ofxKeyboardPropertyHelper<type>, void, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type> >*
 	addMonitor(GetClass* getObject, type(GetClass::*get)(), string label);
 	
 	
 	// addProperty -------------------------------------------------- 
 	template <typename type>
-	ofxKeyboardControlProperty<type, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type> >*
+	ofxKeyboardControlProperty<type, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type>, void, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type> >*
 	addProperty(type* var, string label, type min, type max, type step, type defaultValue);
 	
-	template <typename type, typename GetClass, typename SetClass, typename MinClass, typename MaxClass, typename StepClass>
-	ofxKeyboardControlProperty<type, GetClass, SetClass, MinClass, MaxClass, StepClass>*
+	template <typename type, typename GetClass, typename SetClass, typename SetReturnClass, typename MinClass, typename MaxClass, typename StepClass>
+	ofxKeyboardControlProperty<type, GetClass, SetClass, SetReturnClass, MinClass, MaxClass, StepClass>*
 	addProperty(GetClass* getObject, type(GetClass::*get)(),
-				SetClass* setObject, void(SetClass::*set)(type value),
+				SetClass* setObject, SetReturnClass(SetClass::*set)(type value),
 				string label, 
 				MinClass* minObject, type(MinClass::*min)(),
 				MaxClass* maxObject, type(MaxClass::*max)(),
@@ -156,15 +156,15 @@ public:
 	
 	
 	// addProperty (special case for booleans)-----------------------------------------
-	template <typename GetClass, typename SetClass>
-	ofxKeyboardControlProperty<bool, GetClass, SetClass, ofxKeyboardPropertyHelper<bool>, ofxKeyboardPropertyHelper<bool>, ofxKeyboardPropertyHelper<bool> >*
+	template <typename GetClass, typename SetClass, typename SetReturnClass>
+	ofxKeyboardControlProperty<bool, GetClass, SetClass, SetReturnClass, ofxKeyboardPropertyHelper<bool>, ofxKeyboardPropertyHelper<bool>, ofxKeyboardPropertyHelper<bool> >*
 	addProperty(GetClass* getObject, bool(GetClass::*get)(),
-				SetClass* setObject, void(SetClass::*set)(bool value),
+				SetClass* setObject, SetReturnClass(SetClass::*set)(bool value),
 				string label,
 				bool defaultValue);
 	
 	// As this is not a template, it can only be defined here inside the class, or in hte cpp file, but not in the end of this h files, as the other template methods
-	ofxKeyboardControlProperty<bool, ofxKeyboardPropertyHelper<bool>, ofxKeyboardPropertyHelper<bool>, ofxKeyboardPropertyHelper<bool>, ofxKeyboardPropertyHelper<bool>, ofxKeyboardPropertyHelper<bool> >*
+	ofxKeyboardControlProperty<bool, ofxKeyboardPropertyHelper<bool>, ofxKeyboardPropertyHelper<bool>, void, ofxKeyboardPropertyHelper<bool>, ofxKeyboardPropertyHelper<bool>, ofxKeyboardPropertyHelper<bool> >*
 	addProperty(bool* var, string label, bool defaultValue){
 		
 		ofxKeyboardPropertyHelper<bool>* helper = new ofxKeyboardPropertyHelper<bool>();
@@ -193,7 +193,7 @@ private:
 // addMonitor ---------------------------------------------------------------------
 ///////////////////////////////////////////////////////////////////////////////////
 template <typename type>
-ofxKeyboardControlProperty<type, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type> >*
+ofxKeyboardControlProperty<type, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type>, void, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type> >*
 ofxKeyboardSettings::addMonitor(type(*get)(), string label){
 	
 	ofxKeyboardPropertyHelper<type>* helper = new ofxKeyboardPropertyHelper<type>();
@@ -203,7 +203,7 @@ ofxKeyboardSettings::addMonitor(type(*get)(), string label){
 }
 
 template <typename type>
-ofxKeyboardControlProperty<type, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type> >*
+ofxKeyboardControlProperty<type, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type>, void, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type> >*
 ofxKeyboardSettings::addMonitor(type* var, string label){
 	
 	ofxKeyboardPropertyHelper<type>* helper = new ofxKeyboardPropertyHelper<type>();
@@ -213,7 +213,7 @@ ofxKeyboardSettings::addMonitor(type* var, string label){
 }
 
 template <typename type, typename GetClass>
-ofxKeyboardControlProperty<type, GetClass, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type> >*
+ofxKeyboardControlProperty<type, GetClass, ofxKeyboardPropertyHelper<type>, void, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type> >*
 ofxKeyboardSettings::addMonitor(GetClass* getObject, type(GetClass::*get)(), string label){
 	
 	ofxKeyboardPropertyHelper<type>* helper = new ofxKeyboardPropertyHelper<type>();
@@ -232,7 +232,7 @@ ofxKeyboardSettings::addMonitor(GetClass* getObject, type(GetClass::*get)(), str
 // addProperty --------------------------------------------------------------------
 ///////////////////////////////////////////////////////////////////////////////////
 template <typename type>
-ofxKeyboardControlProperty<type, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type> >*
+ofxKeyboardControlProperty<type, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type>, void, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type>, ofxKeyboardPropertyHelper<type> >*
 ofxKeyboardSettings::addProperty(type* var, string label, type min, type max, type step, type defaultValue){
 	
 	ofxKeyboardPropertyHelper<type>* helper = new ofxKeyboardPropertyHelper<type>();
@@ -250,10 +250,10 @@ ofxKeyboardSettings::addProperty(type* var, string label, type min, type max, ty
 					   defaultValue);
 }
 
-template <typename type, typename GetClass, typename SetClass, typename MinClass, typename MaxClass, typename StepClass>
-ofxKeyboardControlProperty<type, GetClass, SetClass, MinClass, MaxClass, StepClass>*
+template <typename type, typename GetClass, typename SetClass, typename SetReturnClass,typename MinClass, typename MaxClass, typename StepClass>
+ofxKeyboardControlProperty<type, GetClass, SetClass, SetReturnClass, MinClass, MaxClass, StepClass>*
 ofxKeyboardSettings::addProperty(GetClass* getObject, type(GetClass::*get)(),
-								 SetClass* setObject, void(SetClass::*set)(type value),
+								 SetClass* setObject, SetReturnClass(SetClass::*set)(type value),
 								 string label, 
 								 MinClass* minObject, type(MinClass::*min)(),
 								 MaxClass* maxObject, type(MaxClass::*max)(),
@@ -261,8 +261,8 @@ ofxKeyboardSettings::addProperty(GetClass* getObject, type(GetClass::*get)(),
 								 type defaultValue,
 								 bool allowControl
 								 ){
-	ofxKeyboardControlProperty<type, GetClass, SetClass, MinClass, MaxClass, StepClass>* property;
-	property = new ofxKeyboardControlProperty<type, GetClass, SetClass, MinClass, MaxClass, StepClass>();
+	ofxKeyboardControlProperty<type, GetClass, SetClass, SetReturnClass, MinClass, MaxClass, StepClass>* property;
+	property = new ofxKeyboardControlProperty<type, GetClass, SetClass, SetReturnClass, MinClass, MaxClass, StepClass>();
 	property->allowControl = allowControl;
 	property->getObject = getObject;	
 	property->get = get;
@@ -294,10 +294,10 @@ ofxKeyboardSettings::addProperty(GetClass* getObject, type(GetClass::*get)(),
 ///////////////////////////////////////////////////////////////////////////////////
 // addProperty (special case for booleans)-----------------------------------------
 ///////////////////////////////////////////////////////////////////////////////////
-template <typename GetClass, typename SetClass>
-ofxKeyboardControlProperty<bool, GetClass, SetClass, ofxKeyboardPropertyHelper<bool>, ofxKeyboardPropertyHelper<bool>, ofxKeyboardPropertyHelper<bool> >*
+template <typename GetClass, typename SetClass, typename SetReturnClass>
+ofxKeyboardControlProperty<bool, GetClass, SetClass, SetReturnClass, ofxKeyboardPropertyHelper<bool>, ofxKeyboardPropertyHelper<bool>, ofxKeyboardPropertyHelper<bool> >*
 ofxKeyboardSettings::addProperty(GetClass* getObject, bool(GetClass::*get)(),
-			SetClass* setObject, void(SetClass::*set)(bool value),
+			SetClass* setObject, SetReturnClass(SetClass::*set)(bool value),
 			string label,
 			bool defaultValue){
 	
