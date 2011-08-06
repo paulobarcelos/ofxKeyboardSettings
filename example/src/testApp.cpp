@@ -57,8 +57,22 @@ void testApp::setup(){
 						 &movement, &Movement::stop,		// pointer to set object, pointer to set function
 						 "Stop_Movement",					// property label (will define the xml tag) !!Spaces are not allowed!!
 						 false);							// default value
-	 
-							 
+	
+	// Now add some simple function callbacks
+	
+	// Add a callback to a static functions
+	settings.addCallback(&ofToggleFullscreen,		// pointer to function
+						 "ofToggleFullscreen()");	// label
+	
+	// Add a callback to a object functions
+	settings.addCallback(&greyscale,				// pointer to object
+						 &Greyscale::setToBlack,	// pointer to object function
+						 "greyscale.setToBlack()");	// label
+
+	settings.addCallback(&greyscale,				// pointer to object
+						 &Greyscale::setToWhite,	// pointer to object function
+						 "greyscale.setToWhite()");	// label
+								 
 }
 
 //--------------------------------------------------------------
