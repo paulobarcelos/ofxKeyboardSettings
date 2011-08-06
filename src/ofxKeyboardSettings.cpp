@@ -57,7 +57,8 @@ void ofxKeyboardSettings::keyPressed(int key)
 			if (curPropertyIterator != --(properties.end()))
 				++curPropertyIterator;
 		}
-		curProperty = *curPropertyIterator;
+		if(properties.size()>0)
+			curProperty = *curPropertyIterator;
 		if(curProperty){
 			if(curProperty->allowControl){
 				curProperty->keyPressed(key);
