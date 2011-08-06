@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\testApp.cpp" />
+    <ClCompile Include="..\src\ofxKeyboardSettings.cpp">
+      <Filter>addons\ofxKeyboardSettings\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ofxXmlSettings\src\ofxXmlSettings.cpp">
+      <Filter>addons\ofxXmlSettings\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ofxXmlSettings\libs\tinyxml.cpp">
+      <Filter>addons\ofxXmlSettings\libs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ofxXmlSettings\libs\tinyxmlerror.cpp">
+      <Filter>addons\ofxXmlSettings\libs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ofxXmlSettings\libs\tinyxmlparser.cpp">
+      <Filter>addons\ofxXmlSettings\libs</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\testApp.h" />
+    <ClInclude Include="..\src\ofxKeyboardSettings.h">
+      <Filter>addons\ofxKeyboardSettings\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ofxXmlSettings\src\ofxXmlSettings.h">
+      <Filter>addons\ofxXmlSettings\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ofxXmlSettings\libs\tinyxml.h">
+      <Filter>addons\ofxXmlSettings\libs</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="addons">
+      <UniqueIdentifier>{3ad74e22-8473-4e8d-a289-a8939eeb860d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="addons\ofxKeyboardSettings">
+      <UniqueIdentifier>{fbaa3da1-91c0-4109-be1a-e56c403f21c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="addons\ofxKeyboardSettings\src">
+      <UniqueIdentifier>{7e3acacf-516a-4129-853c-4733005d294e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="addons\ofxXmlSettings">
+      <UniqueIdentifier>{c4aed336-fdd5-441f-aeca-8f1e2791b370}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="addons\ofxXmlSettings\src">
+      <UniqueIdentifier>{5dd240aa-ca26-43ce-998d-ffb98c23918b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="addons\ofxXmlSettings\libs">
+      <UniqueIdentifier>{5194c114-286a-4808-b23f-400c7ae34eff}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
