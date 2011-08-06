@@ -11,6 +11,10 @@ class Greyscale { //just to show how to handle properties controled by getters/s
 		int		getGreyMin(){return 0;};
 		int		getGreyMax(){return 255;};
 		int		getGreyStep(){return 10;};
+	
+		void	setToBlack(){setGrey(getGreyMin());};
+		int		setToWhite(){setGrey(getGreyMax()); return 5;};
+	
 	private:
 		int		grey;	
 };
