@@ -40,7 +40,6 @@ void ofxKeyboardSettings::keyPressed(int key)
 			if(diff > KEYBOARD_SETTINGS_HOLD_TIME){
 				accessKeyStartTime = ofGetElapsedTimef();
 				isActive ^= true;
-				cout << isActive << endl;
 			}
 		}
 	}
