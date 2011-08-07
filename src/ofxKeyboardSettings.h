@@ -268,13 +268,14 @@ ofxKeyboardSettings::addMonitor(GetClass* getObject, type(GetClass::*get)(), str
 	
 	ofxKeyboardPropertyHelper<type, type>* helper = new ofxKeyboardPropertyHelper<type, type>();
 	
+	type emptyInitializedObject = type();
 	return canonicalAddProperty(getObject, get,
 							    helper, &ofxKeyboardPropertyHelper<type, type>::set,
 							    label,
 							    helper, &ofxKeyboardPropertyHelper<type, type>::min,
 							    helper, &ofxKeyboardPropertyHelper<type, type>::max,
 							    helper, &ofxKeyboardPropertyHelper<type, type>::step,
-							    (type)NULL,
+							    emptyInitializedObject,
 							    false,
 								(ofxKeyboardPropertyHelper<type, type>*)NULL, &ofxKeyboardPropertyHelper<type, type>::get);
 }
