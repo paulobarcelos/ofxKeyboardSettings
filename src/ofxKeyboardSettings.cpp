@@ -72,6 +72,8 @@ void ofxKeyboardSettings::draw(float x, float y){
 		
 		string output = "(" + ofToString((const char)accessKey) + ") " + label;
 		
+		ofPushStyle();
+		ofEnableAlphaBlending();
 		ofFill();
 		ofSetColor(255, 255, 255, 150);
 		ofRect(x, y, KEYBOARD_SETTINGS_WIDTH, KEYBOARD_SETTINGS_PROPERTY_HEIGHT);
@@ -86,6 +88,7 @@ void ofxKeyboardSettings::draw(float x, float y){
 			
 			propertyIndex++;
 		}
+		ofPopStyle();
 	}
 }
 ///////////////////////////////////////////////////////////////////////////////////
